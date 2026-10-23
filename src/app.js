@@ -20,6 +20,12 @@ app.use(express.json({
 // Serve static UI templates
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Explicit Clean HTML Page Routes (Supports both /book and /book.html)
+app.get(['/book', '/book.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'book.html')));
+app.get(['/treatments', '/treatments.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'treatments.html')));
+app.get(['/lookbook', '/lookbook.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'lookbook.html')));
+app.get(['/about', '/about.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'about.html')));
+
 // 1. Health
 app.get(['/api/health', '/health'], (req, res) => {
   res.json({
