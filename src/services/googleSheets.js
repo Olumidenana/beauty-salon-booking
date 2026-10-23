@@ -10,7 +10,6 @@ const LOCAL_STORE_PATH = process.env.VERCEL
 // In-memory cache fallback for serverless execution
 let memoryStore = { bookings: [], orders: [] };
 
-// Ensure data directory exists
 function ensureLocalStore() {
   try {
     const dir = path.dirname(LOCAL_STORE_PATH);
@@ -21,13 +20,10 @@ function ensureLocalStore() {
       fs.writeFileSync(LOCAL_STORE_PATH, JSON.stringify(memoryStore, null, 2));
     }
   } catch (err) {
-    // If filesystem is restricted, rely on memoryStore
+    // Rely on memoryStore
   }
 }
 
-/**
- * Save entry to local backup storage
- */
 function saveLocalBackup(type, entry) {
   try {
     ensureLocalStore();
@@ -48,13 +44,10 @@ function saveLocalBackup(type, entry) {
       fs.writeFileSync(LOCAL_STORE_PATH, JSON.stringify(store, null, 2));
     }
   } catch (err) {
-    console.warn('[Storage] Notice on local file write (using in-memory):', err.message);
+    // Memory store fallback
   }
 }
 
-/**
- * Get all stored records (for admin dashboard)
- */
 function getStoredRecords() {
   ensureLocalStore();
   try {
@@ -66,27 +59,70 @@ function getStoredRecords() {
         orders: parsed.orders && parsed.orders.length ? parsed.orders : memoryStore.orders
       };
     }
-  } catch (err) {
-    // fallback to memoryStore
-  }
+  } catch (err) {}
   return memoryStore;
 }
 
 /**
- * Sync with Google Sheets
+ * Sync to Supabase Database (if credentials configured)
+ */
+async function syncToSupabase(payload) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) return false;
+
+  try {
+    const res = await fetch(`${supabaseUrl.replace(/\/$/, '')}/rest/v1/beauty_bookings`, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        reference: payload.reference,
+        service_name: payload.serviceName,
+        stylist: payload.stylist,
+        appointment_date: payload.date,
+        time_slot: payload.timeSlot,
+        customer_name: payload.customerName,
+        customer_phone: payload.customerPhone,
+        customer_email: payload.customerEmail,
+        deposit_amount: payload.amount,
+        payment_status: payload.paymentStatus || 'PAID',
+        notes: payload.notes
+      })
+    });
+
+    if (res.ok) {
+      console.log('[Supabase] Successfully recorded in PostgreSQL table.');
+      return true;
+    } else {
+      const errText = await res.text();
+      console.warn('[Supabase] Insert notice:', errText);
+    }
+  } catch (err) {
+    console.error('[Supabase] Network error:', err.message);
+  }
+  return false;
+}
+
+/**
+ * Sync with Google Sheets + Supabase
  */
 async function syncToGoogleSheet(payload) {
-  // Always save locally/in-memory first for reliability
+  // 1. Local / Serverless Memory Store
   saveLocalBackup(payload.type, payload);
 
-  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL;
-  const sheetId = process.env.GOOGLE_SHEET_ID;
-  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+  // 2. Supabase Cloud DB
+  const supabaseSynced = await syncToSupabase(payload);
 
+  // 3. Google Sheets (Apps Script Webhook)
+  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL;
   let sheetSynced = false;
 
-  // 1. Try Apps Script Webhook
   if (webhookUrl && webhookUrl.startsWith('http')) {
     try {
       const response = await fetch(webhookUrl, {
@@ -97,75 +133,15 @@ async function syncToGoogleSheet(payload) {
       if (response.ok) {
         console.log('[GoogleSheets] Successfully synced via Apps Script Webhook.');
         sheetSynced = true;
-      } else {
-        console.warn('[GoogleSheets] Webhook responded with status:', response.status);
       }
     } catch (err) {
       console.error('[GoogleSheets] Webhook error:', err.message);
     }
   }
 
-  // 2. Try Google Sheets API with Service Account (if configured)
-  if (!sheetSynced && sheetId && clientEmail && privateKey) {
-    try {
-      const auth = new google.auth.JWT({
-        email: clientEmail,
-        key: privateKey.replace(/\\n/g, '\n'),
-        scopes: ['https://www.googleapis.com/auth/spreadsheets']
-      });
-
-      const sheets = google.sheets({ version: 'v4', auth });
-      const now = new Date().toISOString();
-
-      let rowValues = [];
-      if (payload.type === 'BEAUTY_BOOKING') {
-        rowValues = [
-          now,
-          payload.reference || 'N/A',
-          payload.customerName || '',
-          payload.customerPhone || '',
-          payload.serviceName || '',
-          payload.stylist || 'Any',
-          payload.date || '',
-          payload.timeSlot || '',
-          payload.amount || 0,
-          payload.paymentStatus || 'PAID',
-          payload.notes || ''
-        ];
-      } else {
-        rowValues = [
-          now,
-          payload.reference || 'N/A',
-          payload.customerName || '',
-          payload.customerPhone || '',
-          payload.fulfillmentType || 'DELIVERY',
-          payload.address || 'Pickup',
-          payload.itemsSummary || '',
-          payload.amount || 0,
-          payload.paymentStatus || 'PAID',
-          payload.notes || ''
-        ];
-      }
-
-      await sheets.spreadsheets.values.append({
-        spreadsheetId: sheetId,
-        range: 'A:Z',
-        valueInputOption: 'USER_ENTERED',
-        requestBody: {
-          values: [rowValues]
-        }
-      });
-
-      console.log('[GoogleSheets] Successfully appended row via official Sheets API.');
-      sheetSynced = true;
-    } catch (err) {
-      console.error('[GoogleSheets] Sheets API error:', err.message);
-    }
-  }
-
   return {
     success: true,
-    localSaved: true,
+    supabaseSynced,
     sheetSynced
   };
 }
