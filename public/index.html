@@ -259,6 +259,76 @@
     </div>
   </footer>
 
+  <!-- ======================================================== -->
+  <!-- FLOATING LUXURY CONCIERGE FAQ & PROOF CHATBOT WIDGET -->
+  <!-- ======================================================== -->
+  <div class="fixed bottom-5 right-5 z-40">
+    <button onclick="toggleChat()" class="px-4 py-3 rounded-full bg-gradient-to-r from-[#dfac6c] to-[#c48e4b] text-stone-950 font-bold text-xs shadow-2xl flex items-center gap-2 hover:scale-105 transition-transform border border-amber-200/50">
+      <span class="w-2 h-2 rounded-full bg-emerald-950 animate-pulse"></span>
+      <span>💬 Ask Studio Concierge</span>
+    </button>
+  </div>
+
+  <!-- Chat Drawer / Modal -->
+  <div id="conciergeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-[#141211] border border-[#dfac6c]/40 rounded-t-3xl sm:rounded-3xl max-w-md w-full h-[85vh] sm:h-[620px] flex flex-col shadow-2xl overflow-hidden">
+      
+      <!-- Chat Header -->
+      <div class="p-4 border-b border-stone-800 bg-[#1c1815] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-[#2a2420] border border-[#dfac6c] flex items-center justify-center text-[#dfac6c] text-sm">
+            ✦
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-white text-base">Studio Concierge</h3>
+            <p class="text-[10px] text-emerald-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Online • Instant Answers & Proof
+            </p>
+          </div>
+        </div>
+        <button onclick="toggleChat()" class="text-stone-400 hover:text-white text-lg p-2">✕</button>
+      </div>
+
+      <!-- Chat Messages Container -->
+      <div id="chatMessages" class="flex-grow p-4 overflow-y-auto space-y-3.5 text-xs">
+        <!-- Welcome Message -->
+        <div class="flex gap-2.5 items-start">
+          <div class="w-7 h-7 rounded-full bg-[#2a2420] border border-[#dfac6c]/40 flex-shrink-0 flex items-center justify-center text-[10px] text-[#dfac6c]">✦</div>
+          <div class="bg-[#1a1715] border border-stone-800 p-3.5 rounded-2xl rounded-tl-none text-stone-200 leading-relaxed max-w-[85%]">
+            Hello gorgeous! ✨ I am your 24/7 Studio Concierge. How can I assist with your appointment today?
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Question Chips (Solves DM time-wasters!) -->
+      <div class="p-3 border-t border-stone-900 bg-[#120f0e] flex gap-1.5 overflow-x-auto whitespace-nowrap">
+        <button onclick="askQuestion('location')" class="px-3 py-1.5 rounded-full bg-[#1e1a17] hover:bg-[#2b2420] text-stone-300 text-[11px] border border-stone-800 flex items-center gap-1 flex-shrink-0">
+          📍 Studio Location?
+        </button>
+        <button onclick="askQuestion('proof')" class="px-3 py-1.5 rounded-full bg-[#1e1a17] hover:bg-[#2b2420] text-[#dfac6c] text-[11px] border border-[#dfac6c]/40 font-semibold flex items-center gap-1 flex-shrink-0">
+          📸 Real Photos & Proof?
+        </button>
+        <button onclick="askQuestion('retention')" class="px-3 py-1.5 rounded-full bg-[#1e1a17] hover:bg-[#2b2420] text-stone-300 text-[11px] border border-stone-800 flex items-center gap-1 flex-shrink-0">
+          ⏱️ How Long Do They Last?
+        </button>
+        <button onclick="askQuestion('homeservice')" class="px-3 py-1.5 rounded-full bg-[#1e1a17] hover:bg-[#2b2420] text-stone-300 text-[11px] border border-stone-800 flex items-center gap-1 flex-shrink-0">
+          🚗 Home Service?
+        </button>
+        <button onclick="askQuestion('deposit')" class="px-3 py-1.5 rounded-full bg-[#1e1a17] hover:bg-[#2b2420] text-stone-300 text-[11px] border border-stone-800 flex items-center gap-1 flex-shrink-0">
+          💳 Deposit Policy?
+        </button>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="p-3 border-t border-stone-800 bg-[#161311] flex gap-2">
+        <input type="text" id="chatInput" placeholder="Type a question..." onkeydown="if(event.key==='Enter') sendUserMessage()" class="flex-grow bg-[#0c0a09] border border-stone-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#dfac6c]">
+        <button onclick="sendUserMessage()" class="px-4 py-2.5 rounded-xl gold-gradient text-stone-950 font-bold text-xs hover:brightness-110">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -289,6 +359,135 @@
     function dismissPwaBanner() {
       const banner = document.getElementById('pwaBanner');
       if (banner) banner.style.display = 'none';
+    }
+
+    // ==========================================
+    // STUDIO CONCIERGE CHATBOT
+    // ==========================================
+    const STUDIO_WHATSAPP = "2348149640122";
+
+    function toggleChat() {
+      const modal = document.getElementById('conciergeModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function addMessage(sender, text, isHtml = false) {
+      const container = document.getElementById('chatMessages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = sender === 'user' ? 'flex justify-end' : 'flex gap-2.5 items-start';
+
+      if (sender === 'user') {
+        msgDiv.innerHTML = `
+          <div class="bg-[#dfac6c] text-stone-950 p-3 rounded-2xl rounded-tr-none font-medium max-w-[85%]">
+            ${text}
+          </div>
+        `;
+      } else {
+        msgDiv.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-[#2a2420] border border-[#dfac6c]/40 flex-shrink-0 flex items-center justify-center text-[10px] text-[#dfac6c]">✦</div>
+          <div class="bg-[#1a1715] border border-stone-800 p-3.5 rounded-2xl rounded-tl-none text-stone-200 leading-relaxed max-w-[85%]">
+            ${isHtml ? text : text.replace(/\n/g, '<br>')}
+          </div>
+        `;
+      }
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function askQuestion(type) {
+      if (type === 'location') {
+        addMessage('user', 'Where is your studio located?');
+        setTimeout(() => {
+          addMessage('bot', `
+            📍 <b>Our Studio Location:</b><br>
+            Plot 14B, Bishop Oluwole Street, Victoria Island, Lagos.<br><br>
+            • Landmark: 2 mins from Eko Hotel & Suites.<br>
+            • Free secure private parking available on arrival.<br>
+            • <i>By appointment only to maintain utmost client privacy.</i>
+          `, true);
+        }, 300);
+      } else if (type === 'proof') {
+        addMessage('user', 'Can I see real photo proof of past clients?');
+        setTimeout(() => {
+          addMessage('bot', `
+            📸 <b>Real Results from Our Studio This Week:</b><br><br>
+            <div class="grid grid-cols-2 gap-2 my-2">
+              <div class="rounded-xl overflow-hidden border border-stone-800">
+                <img src="https://images.unsplash.com/photo-1583001931096-959e9a1a6223?w=300" class="w-full h-24 object-cover">
+                <span class="block text-[9px] p-1 bg-stone-950 text-stone-300">Mega Volume (Day 21)</span>
+              </div>
+              <div class="rounded-xl overflow-hidden border border-stone-800">
+                <img src="https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=300" class="w-full h-24 object-cover">
+                <span class="block text-[9px] p-1 bg-stone-950 text-stone-300">Glazed BIAB Nails</span>
+              </div>
+            </div>
+            💬 <i>"Amina's retention is insane! 4 weeks in and still fluffy!"</i> — Kemi O. (Verified Client ★★★★★)
+            <br><br>
+            <a href="/book.html" class="mt-1 px-3 py-1.5 rounded-xl gold-gradient text-stone-950 font-bold text-[11px] inline-block">Select Your Slot Now →</a>
+          `, true);
+        }, 300);
+      } else if (type === 'retention') {
+        addMessage('user', 'How long do the lashes last?');
+        setTimeout(() => {
+          addMessage('bot', `
+            ⏱️ <b>Retention Expectation:</b><br>
+            • Our Russian & Hybrid sets last <b>3 to 5 weeks</b> depending on your natural lash growth cycle.<br>
+            • We provide a free complimentary spoolie & aftercare instruction card.<br>
+            • Infill recommended at Week 3 for optimal fullness.
+          `, true);
+        }, 300);
+      } else if (type === 'homeservice') {
+        addMessage('user', 'Do you offer home service?');
+        setTimeout(() => {
+          addMessage('bot', `
+            🚗 <b>Home Service Policy:</b><br>
+            To guarantee clinical sterilization, high-definition lighting, and ergonomic reclining chairs, all primary services take place in our private studio.<br><br>
+            VIP Bridal house-calls are available strictly by special request via WhatsApp.
+          `, true);
+        }, 300);
+      } else if (type === 'deposit') {
+        addMessage('user', 'Why is a deposit required upfront?');
+        setTimeout(() => {
+          addMessage('bot', `
+            💳 <b>Reservation Policy:</b><br>
+            Because our master artists dedicate 90–120 full minutes exclusively to your chair, a deposit secures your dedicated slot and prevents no-shows.<br><br>
+            • <b>100% of your deposit is deducted</b> from your final treatment bill.<br>
+            • Free rescheduling allowed up to 24 hours prior.
+          `, true);
+        }, 300);
+      }
+    }
+
+    function sendUserMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      addMessage('user', text);
+      const lower = text.toLowerCase();
+
+      setTimeout(() => {
+        if (lower.includes('price') || lower.includes('cost') || lower.includes('how much')) {
+          addMessage('bot', `
+            💎 <b>Signature Pricing:</b><br>
+            • Mega Russian Volume: ₦28,000 (₦10k deposit)<br>
+            • Whispy Hybrid Set: ₦22,000 (₦8k deposit)<br>
+            • Glazed BIAB Nails: ₦19,500 (₦5k deposit)<br>
+            • Jelly Spa Pedicure: ₦15,000 (₦5k deposit)<br><br>
+            <a href="/book.html" class="px-3 py-1.5 rounded-xl gold-gradient text-stone-950 font-bold text-[11px] inline-block">Book an Open Chair →</a>
+          `, true);
+        } else if (lower.includes('location') || lower.includes('address') || lower.includes('where')) {
+          askQuestion('location');
+        } else if (lower.includes('picture') || lower.includes('proof') || lower.includes('photo')) {
+          askQuestion('proof');
+        } else {
+          addMessage('bot', `
+            Thank you for asking! For custom inquiries or special styles, you can also chat with our salon manager directly: <br><br>
+            <a href="https://wa.me/${STUDIO_WHATSAPP}?text=Hi%20Maison%20De%20Lash,%20I%20have%20a%20question" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white font-bold inline-block">💬 WhatsApp Us</a>
+          `, true);
+        }
+      }, 400);
     }
   </script>
 </body>
