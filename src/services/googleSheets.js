@@ -127,6 +127,7 @@ async function syncToGoogleSheet(payload) {
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
+        redirect: 'follow',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
