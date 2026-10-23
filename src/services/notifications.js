@@ -1,86 +1,55 @@
 /**
- * Notification Service: Telegram Bot & WhatsApp
+ * Notification Service: Telegram Bot & Direct Automated WhatsApp DMs
  */
 
-/**
- * Format message for Telegram / WhatsApp
- */
 function formatMessage(type, data) {
   const currency = '₦';
   const formattedAmount = (data.amount || 0).toLocaleString();
 
-  if (type === 'BEAUTY_BOOKING') {
-    return `
-✨ <b>NEW APPOINTMENT BOOKED!</b> ✨
-━━━━━━━━━━━━━━━━━━━━
-💇 <b>Service:</b> ${data.serviceName}
-📅 <b>Date:</b> ${data.date}
-⏰ <b>Time Slot:</b> ${data.timeSlot}
-👤 <b>Stylist/Tech:</b> ${data.stylist || 'Any'}
-━━━━━━━━━━━━━━━━━━━━
-<b>Customer Details:</b>
-• <b>Name:</b> ${data.customerName}
-• <b>Phone:</b> ${data.customerPhone}
-• <b>Email:</b> ${data.customerEmail || 'N/A'}
-• <b>Notes:</b> ${data.notes || 'None'}
-━━━━━━━━━━━━━━━━━━━━
-💰 <b>Deposit Paid:</b> ${currency}${formattedAmount} (${data.paymentStatus || 'PAID'})
-🔖 <b>Ref:</b> <code>${data.reference || 'N/A'}</code>
-`.trim();
-  }
-
-  // Food Order
   return `
-🍔 <b>NEW FOOD ORDER RECEIVED!</b> 🍔
-━━━━━━━━━━━━━━━━━━━━
-📦 <b>Fulfillment:</b> ${data.fulfillmentType === 'PICKUP' ? '🏃 PICKUP AT STORE' : '🛵 DOORSTEP DELIVERY'}
-📍 <b>Address:</b> ${data.address || 'In-store pickup'}
-━━━━━━━━━━━━━━━━━━━━
-🍽️ <b>Items:</b>
-${data.itemsSummary || 'Standard order'}
-━━━━━━━━━━━━━━━━━━━━
-<b>Customer Details:</b>
-• <b>Name:</b> ${data.customerName}
-• <b>Phone:</b> ${data.customerPhone}
-• <b>Special Instructions:</b> ${data.notes || 'None'}
-━━━━━━━━━━━━━━━━━━━━
-💰 <b>Total Paid:</b> ${currency}${formattedAmount} (${data.paymentStatus || 'PAID'})
-🔖 <b>Ref:</b> <code>${data.reference || 'N/A'}</code>
+✨ *NEW APPOINTMENT CONFIRMED!* ✨
+--------------------------------
+💇 *Treatment:* ${data.serviceName}
+📅 *Date:* ${data.date}
+⏰ *Time Slot:* ${data.timeSlot}
+👤 *Artist:* ${data.stylist || 'Any Master'}
+--------------------------------
+*Client Details:*
+• *Name:* ${data.customerName}
+• *Phone:* ${data.customerPhone}
+• *Email:* ${data.customerEmail || 'N/A'}
+• *Notes:* ${data.notes || 'None'}
+--------------------------------
+💰 *Deposit Paid:* ${currency}${formattedAmount} (${data.paymentStatus || 'PAID'})
+🔖 *Ref:* ${data.reference || 'N/A'}
 `.trim();
 }
 
 /**
- * Send alert via Telegram Bot
+ * Send alert via Telegram Bot (100% Free, Instant Phone Buzzer)
  */
 async function sendTelegramAlert(type, data) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
   if (!token || !chatId) {
-    console.log('[Notification] Telegram Bot Token/Chat ID not configured. Skipping live alert.');
     return { sent: false, reason: 'unconfigured' };
   }
 
   try {
-    const text = formatMessage(type, data);
+    const text = formatMessage(type, data).replace(/\*/g, '<b>').replace(/<b>([^\n<]+)<b>/g, '<b>$1</b>');
     const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
-        text,
+        text: text.replace(/\*/g, ''),
         parse_mode: 'HTML'
       })
     });
 
     const result = await response.json();
-    if (!result.ok) {
-      console.error('[Notification] Telegram API error:', result.description);
-      return { sent: false, error: result.description };
-    }
-
-    console.log('[Notification] Telegram notification sent successfully.');
-    return { sent: true };
+    return { sent: result.ok };
   } catch (err) {
     console.error('[Notification] Telegram dispatch error:', err.message);
     return { sent: false, error: err.message };
@@ -88,74 +57,73 @@ async function sendTelegramAlert(type, data) {
 }
 
 /**
- * Generate a prefilled WhatsApp link for instant contact
+ * Send Direct Automated WhatsApp DM to Owner's Phone
+ * Supports CallMeBot (Free WhatsApp API) or UltraMsg / Green-API
  */
-function generateWhatsAppDeepLink(phone, message) {
-  if (!phone) return null;
-  const cleanPhone = phone.replace(/[^0-9]/g, '');
-  return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-}
+async function sendDirectWhatsAppDM(type, data) {
+  const message = formatMessage(type, data);
+  const ownerPhone = process.env.WHATSAPP_OWNER_PHONE; // e.g. +2348012345678
+  const callMeBotApiKey = process.env.CALLMEBOT_API_KEY; // Free CallMeBot API Key
+  const customGatewayUrl = process.env.WHATSAPP_API_URL;
+  const customGatewayToken = process.env.WHATSAPP_API_TOKEN;
 
-/**
- * Dispatch WhatsApp notification (if gateway API configured)
- */
-async function sendWhatsAppAlert(type, data) {
-  const apiUrl = process.env.WHATSAPP_API_URL;
-  const token = process.env.WHATSAPP_API_TOKEN;
-  const vendorPhone = process.env.WHATSAPP_VENDOR_PHONE || data.customerPhone;
-
-  // Plain text version for WhatsApp
-  const plainText = formatMessage(type, data)
-    .replace(/<[^>]*>/g, '')
-    .replace(/━━━━━━━━━━━━━━━━━━━━/g, '-----------------');
-
-  // If external gateway is configured
-  if (apiUrl && token && vendorPhone) {
+  // 1. CallMeBot Free WhatsApp Gateway (Zero cost)
+  if (ownerPhone && callMeBotApiKey) {
     try {
-      await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          to: vendorPhone,
-          message: plainText
-        })
-      });
-      console.log('[Notification] WhatsApp alert sent via Gateway API.');
-      return { sent: true, mode: 'api' };
+      const cleanPhone = ownerPhone.replace(/[^0-9]/g, '');
+      const encodedMsg = encodeURIComponent(message);
+      const url = `https://api.callmebot.com/whatsapp.php?phone=${cleanPhone}&text=${encodedMsg}&apikey=${callMeBotApiKey}`;
+      
+      const res = await fetch(url);
+      if (res.ok) {
+        console.log('[Notification] Direct WhatsApp message delivered to owner DM via CallMeBot.');
+        return { sent: true, provider: 'callmebot' };
+      }
     } catch (err) {
-      console.error('[Notification] WhatsApp gateway error:', err.message);
+      console.warn('[Notification] CallMeBot error:', err.message);
     }
   }
 
-  // Fallback: return ready-to-click deep link
-  const deepLink = generateWhatsAppDeepLink(data.customerPhone || vendorPhone, plainText);
-  return {
-    sent: false,
-    mode: 'deeplink',
-    deepLink
-  };
+  // 2. Custom WhatsApp Gateway (UltraMsg / GreenAPI / Twilio)
+  if (customGatewayUrl && customGatewayToken && ownerPhone) {
+    try {
+      await fetch(customGatewayUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${customGatewayToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: ownerPhone,
+          message
+        })
+      });
+      console.log('[Notification] Direct WhatsApp DM delivered via custom gateway.');
+      return { sent: true, provider: 'gateway' };
+    } catch (err) {
+      console.warn('[Notification] Custom gateway error:', err.message);
+    }
+  }
+
+  return { sent: false, reason: 'unconfigured' };
 }
 
 /**
- * Master notification dispatcher
+ * Dispatch all alerts
  */
 async function dispatchNotifications(type, data) {
-  const [telegramResult, whatsappResult] = await Promise.all([
+  const [telegram, directWhatsapp] = await Promise.all([
     sendTelegramAlert(type, data),
-    sendWhatsAppAlert(type, data)
+    sendDirectWhatsAppDM(type, data)
   ]);
 
   return {
-    telegram: telegramResult,
-    whatsapp: whatsappResult
+    telegram,
+    directWhatsapp
   };
 }
 
 module.exports = {
   dispatchNotifications,
-  generateWhatsAppDeepLink,
   formatMessage
 };
