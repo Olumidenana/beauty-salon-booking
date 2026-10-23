@@ -3,215 +3,321 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LuxeLash & Nail Studio • Online Booking</title>
+  <title>MAISON DE LASH • Luxury Beauty & Aesthetic Bar</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Paystack Inline JS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-serif { font-family: 'Cormorant Garamond', serif; }
+    .gold-gradient {
+      background: linear-gradient(135deg, #fce0ad 0%, #dfac6c 50%, #c68b45 100%);
+    }
+    .gold-text {
+      background: linear-gradient(135deg, #fae2b6 0%, #e0b47b 50%, #c48e4b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
   </style>
 </head>
-<body class="bg-stone-950 text-stone-100 min-h-screen selection:bg-rose-500 selection:text-white pb-24">
+<body class="bg-[#0c0a09] text-[#f5f5f4] min-h-screen selection:bg-[#dfac6c] selection:text-black antialiased pb-32">
 
-  <!-- Top Announcement Bar -->
-  <div class="bg-gradient-to-r from-rose-950 via-stone-900 to-rose-950 border-b border-rose-900/30 px-4 py-2 text-center text-xs text-rose-200">
-    ✨ <span class="font-semibold">Deposit required to secure slot</span> • Verified via Paystack
+  <!-- Editorial Top Bar -->
+  <div class="border-b border-[#292524] bg-[#141211]/90 backdrop-blur-md px-4 py-2.5 text-center text-[11px] tracking-widest uppercase font-medium text-[#dfac6c]">
+    ✦ Private Studio Booking • Victoria Island, Lagos • By Appointment Only ✦
   </div>
 
-  <!-- Header -->
-  <header class="max-w-xl mx-auto px-6 pt-8 pb-4 text-center">
-    <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-tr from-rose-500 to-pink-300 p-0.5 shadow-lg shadow-rose-500/20">
-      <div class="w-full h-full rounded-full bg-stone-950 flex items-center justify-center text-rose-300 text-2xl font-serif">
-        L
+  <!-- Hero Header -->
+  <header class="max-w-xl mx-auto px-6 pt-10 pb-6 text-center">
+    <span class="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-semibold block mb-2">High-End Aesthetic Sanctuary</span>
+    <h1 class="text-4xl md:text-5xl font-serif font-bold tracking-tight text-white mb-2">
+      MAISON <span class="font-serif italic font-normal gold-text">de</span> LASH
+    </h1>
+    <p class="text-xs text-stone-400 max-w-sm mx-auto leading-relaxed">
+      Bespoke Russian volume lashes, sculpted BIAB nails, and luxury aesthetic treatments crafted by certified master technicians.
+    </p>
+
+    <!-- Social Proof Badges -->
+    <div class="flex items-center justify-center gap-6 mt-5 text-[11px] text-stone-400 border-y border-[#292524] py-2.5">
+      <div class="flex items-center gap-1.5">
+        <span class="text-amber-400">★★★★★</span>
+        <span class="text-white font-semibold">4.9</span> (420+ Reviews)
+      </div>
+      <div>•</div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Slots Open This Week</span>
       </div>
     </div>
-    <h1 class="text-3xl font-serif font-bold tracking-tight text-white mb-1">LuxeLash & Beauty Bar</h1>
-    <p class="text-xs text-stone-400">Victoria Island, Lagos • Mon - Sat (9am - 7pm)</p>
   </header>
 
-  <!-- Main Booking Container -->
-  <main class="max-w-xl mx-auto px-5">
-    
-    <!-- Step 1: Select Service -->
-    <section class="mt-6">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-rose-400">1. Select Service</h2>
-        <span class="text-xs text-stone-400">Step 1 of 4</span>
+  <!-- Booking Flow Container -->
+  <main class="max-w-xl mx-auto px-5 mt-4">
+
+    <!-- STEP 1: SERVICE MENU WITH HIGH-RES EDITORIAL IMAGES -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span class="text-[10px] tracking-widest uppercase text-[#dfac6c] font-bold block">Step 01</span>
+          <h2 class="text-lg font-serif font-bold text-white tracking-wide">Select Treatment</h2>
+        </div>
+        <span class="text-xs text-stone-400">4 Signature Services</span>
       </div>
 
-      <div class="space-y-3" id="servicesList">
-        <!-- Service 1 -->
-        <label class="service-card flex items-center justify-between p-4 rounded-2xl border border-stone-800 bg-stone-900/80 hover:border-rose-500/50 cursor-pointer transition">
-          <div class="flex items-start gap-3">
-            <input type="radio" name="service" value="Full Hybrid Lash Set" data-price="18000" data-deposit="5000" data-duration="90 mins" class="mt-1 text-rose-500 focus:ring-rose-400" checked>
+      <div class="space-y-3.5" id="servicesList">
+
+        <!-- Service 1: Mega Russian Volume -->
+        <label class="service-item relative flex gap-4 p-4 rounded-3xl border border-[#292524] bg-[#141211] hover:border-[#dfac6c]/60 cursor-pointer transition-all duration-200">
+          <input type="radio" name="service" value="Mega Russian Volume Lashes" data-price="28000" data-deposit="10000" data-time="120 mins" class="sr-only peer" checked>
+          
+          <!-- Image -->
+          <div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 relative border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1583001931096-959e9a1a6223?w=400&auto=format&fit=crop&q=80" alt="Russian Lashes" class="w-full h-full object-cover">
+            <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-black/80 text-[9px] font-bold text-[#dfac6c]">Bestseller</span>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-grow flex flex-col justify-between">
             <div>
-              <div class="font-semibold text-white text-sm">Full Hybrid Lash Set</div>
-              <div class="text-xs text-stone-400 mt-0.5">Custom mix of classic & volume • 90 mins</div>
+              <div class="flex items-start justify-between">
+                <h3 class="font-serif font-bold text-white text-base">Mega Russian Volume Set</h3>
+              </div>
+              <p class="text-[11px] text-stone-400 mt-0.5 line-clamp-2 leading-relaxed">
+                Handcrafted 6D–10D fans for high drama, extreme fluffiness & midnight black retention.
+              </p>
+            </div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-stone-900">
+              <span class="text-[10px] text-stone-400 font-medium">⏱ 120 mins</span>
+              <div class="text-right">
+                <span class="font-bold text-white text-sm">₦28,000</span>
+                <span class="text-[10px] text-[#dfac6c] block font-semibold">₦10,000 deposit</span>
+              </div>
             </div>
           </div>
-          <div class="text-right">
-            <div class="font-bold text-white text-sm">₦18,000</div>
-            <div class="text-[10px] text-rose-400 font-medium">₦5,000 deposit</div>
-          </div>
+          <div class="absolute inset-0 rounded-3xl border-2 border-[#dfac6c] pointer-events-none opacity-0 peer-checked:opacity-100 transition"></div>
         </label>
 
-        <!-- Service 2 -->
-        <label class="service-card flex items-center justify-between p-4 rounded-2xl border border-stone-800 bg-stone-900/80 hover:border-rose-500/50 cursor-pointer transition">
-          <div class="flex items-start gap-3">
-            <input type="radio" name="service" value="Mega Russian Volume Lashes" data-price="25000" data-deposit="5000" data-duration="120 mins" class="mt-1 text-rose-500 focus:ring-rose-400">
+        <!-- Service 2: Whispy Hybrid Cat-Eye -->
+        <label class="service-item relative flex gap-4 p-4 rounded-3xl border border-[#292524] bg-[#141211] hover:border-[#dfac6c]/60 cursor-pointer transition-all duration-200">
+          <input type="radio" name="service" value="Whispy Wet-Look Hybrid Lashes" data-price="22000" data-deposit="8000" data-time="90 mins" class="sr-only peer">
+          
+          <div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 relative border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&auto=format&fit=crop&q=80" alt="Hybrid Lashes" class="w-full h-full object-cover">
+          </div>
+
+          <div class="flex-grow flex flex-col justify-between">
             <div>
-              <div class="font-semibold text-white text-sm">Mega Russian Volume</div>
-              <div class="text-xs text-stone-400 mt-0.5">Maximum drama & fluffiness • 120 mins</div>
+              <div class="flex items-start justify-between">
+                <h3 class="font-serif font-bold text-white text-base">Whispy Wet-Look Hybrid Set</h3>
+              </div>
+              <p class="text-[11px] text-stone-400 mt-0.5 line-clamp-2 leading-relaxed">
+                Kim-K spike styling with delicate fans for that effortless snatched fox-eye lift.
+              </p>
+            </div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-stone-900">
+              <span class="text-[10px] text-stone-400 font-medium">⏱ 90 mins</span>
+              <div class="text-right">
+                <span class="font-bold text-white text-sm">₦22,000</span>
+                <span class="text-[10px] text-[#dfac6c] block font-semibold">₦8,000 deposit</span>
+              </div>
             </div>
           </div>
-          <div class="text-right">
-            <div class="font-bold text-white text-sm">₦25,000</div>
-            <div class="text-[10px] text-rose-400 font-medium">₦5,000 deposit</div>
-          </div>
+          <div class="absolute inset-0 rounded-3xl border-2 border-[#dfac6c] pointer-events-none opacity-0 peer-checked:opacity-100 transition"></div>
         </label>
 
-        <!-- Service 3 -->
-        <label class="service-card flex items-center justify-between p-4 rounded-2xl border border-stone-800 bg-stone-900/80 hover:border-rose-500/50 cursor-pointer transition">
-          <div class="flex items-start gap-3">
-            <input type="radio" name="service" value="Acrylic Full Set & Nail Art" data-price="16500" data-deposit="5000" data-duration="90 mins" class="mt-1 text-rose-500 focus:ring-rose-400">
+        <!-- Service 3: Russian Manicure & BIAB Builder Gel -->
+        <label class="service-item relative flex gap-4 p-4 rounded-3xl border border-[#292524] bg-[#141211] hover:border-[#dfac6c]/60 cursor-pointer transition-all duration-200">
+          <input type="radio" name="service" value="Russian Manicure + Glazed BIAB Nails" data-price="19500" data-deposit="5000" data-time="90 mins" class="sr-only peer">
+          
+          <div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 relative border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=400&auto=format&fit=crop&q=80" alt="Nails" class="w-full h-full object-cover">
+            <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded-md bg-black/80 text-[9px] font-bold text-[#dfac6c]">Viral</span>
+          </div>
+
+          <div class="flex-grow flex flex-col justify-between">
             <div>
-              <div class="font-semibold text-white text-sm">Acrylic Full Set + Nail Art</div>
-              <div class="text-xs text-stone-400 mt-0.5">Length extension with handpainted art • 90 mins</div>
+              <div class="flex items-start justify-between">
+                <h3 class="font-serif font-bold text-white text-base">E-File Cuticle & Glazed BIAB Nails</h3>
+              </div>
+              <p class="text-[11px] text-stone-400 mt-0.5 line-clamp-2 leading-relaxed">
+                Flawless dry cuticle prep, strengthening builder gel, and Hailey-Bieber pearl chrome sheen.
+              </p>
+            </div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-stone-900">
+              <span class="text-[10px] text-stone-400 font-medium">⏱ 90 mins</span>
+              <div class="text-right">
+                <span class="font-bold text-white text-sm">₦19,500</span>
+                <span class="text-[10px] text-[#dfac6c] block font-semibold">₦5,000 deposit</span>
+              </div>
             </div>
           </div>
-          <div class="text-right">
-            <div class="font-bold text-white text-sm">₦16,500</div>
-            <div class="text-[10px] text-rose-400 font-medium">₦5,000 deposit</div>
-          </div>
+          <div class="absolute inset-0 rounded-3xl border-2 border-[#dfac6c] pointer-events-none opacity-0 peer-checked:opacity-100 transition"></div>
         </label>
 
-        <!-- Service 4 -->
-        <label class="service-card flex items-center justify-between p-4 rounded-2xl border border-stone-800 bg-stone-900/80 hover:border-rose-500/50 cursor-pointer transition">
-          <div class="flex items-start gap-3">
-            <input type="radio" name="service" value="Luxury Jelly Pedicure" data-price="12000" data-deposit="3000" data-duration="60 mins" class="mt-1 text-rose-500 focus:ring-rose-400">
+        <!-- Service 4: Jelly Pedicure -->
+        <label class="service-item relative flex gap-4 p-4 rounded-3xl border border-[#292524] bg-[#141211] hover:border-[#dfac6c]/60 cursor-pointer transition-all duration-200">
+          <input type="radio" name="service" value="Luxury Jelly Pedicure & Foot Spa" data-price="15000" data-deposit="5000" data-time="60 mins" class="sr-only peer">
+          
+          <div class="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 relative border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=400&auto=format&fit=crop&q=80" alt="Pedicure" class="w-full h-full object-cover">
+          </div>
+
+          <div class="flex-grow flex flex-col justify-between">
             <div>
-              <div class="font-semibold text-white text-sm">Luxury Jelly Pedicure & Scrub</div>
-              <div class="text-xs text-stone-400 mt-0.5">Full detox, callus removal & gel polish • 60 mins</div>
+              <div class="flex items-start justify-between">
+                <h3 class="font-serif font-bold text-white text-base">Luxury Jelly Spa Pedicure</h3>
+              </div>
+              <p class="text-[11px] text-stone-400 mt-0.5 line-clamp-2 leading-relaxed">
+                Warm aloe vera jelly soak, sea-salt exfoliation, deep callus treatment & lasting gel lacquer.
+              </p>
+            </div>
+            <div class="flex items-center justify-between mt-2 pt-2 border-t border-stone-900">
+              <span class="text-[10px] text-stone-400 font-medium">⏱ 60 mins</span>
+              <div class="text-right">
+                <span class="font-bold text-white text-sm">₦15,000</span>
+                <span class="text-[10px] text-[#dfac6c] block font-semibold">₦5,000 deposit</span>
+              </div>
             </div>
           </div>
-          <div class="text-right">
-            <div class="font-bold text-white text-sm">₦12,000</div>
-            <div class="text-[10px] text-rose-400 font-medium">₦3,000 deposit</div>
-          </div>
+          <div class="absolute inset-0 rounded-3xl border-2 border-[#dfac6c] pointer-events-none opacity-0 peer-checked:opacity-100 transition"></div>
         </label>
+
       </div>
     </section>
 
-    <!-- Step 2: Choose Stylist -->
-    <section class="mt-8">
+    <!-- STEP 2: MASTER ARTIST SELECTOR -->
+    <section class="mt-9">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-rose-400">2. Preferred Artist</h2>
+        <div>
+          <span class="text-[10px] tracking-widest uppercase text-[#dfac6c] font-bold block">Step 02</span>
+          <h2 class="text-lg font-serif font-bold text-white tracking-wide">Choose Artist</h2>
+        </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 text-center" id="stylistSelector">
-        <button type="button" class="stylist-btn active p-3 rounded-xl border border-rose-500 bg-rose-500/10 text-white text-xs font-semibold" data-name="Any Available Artist">
-          ✨ Any Artist
-          <span class="block text-[10px] text-stone-400 font-normal">Fastest booking</span>
+      <div class="grid grid-cols-3 gap-2.5" id="stylistSelector">
+        <button type="button" class="stylist-btn active p-3 rounded-2xl border border-[#dfac6c] bg-[#1a1614] text-center transition" data-name="Any Available Master">
+          <div class="w-10 h-10 mx-auto rounded-full bg-[#2a2420] flex items-center justify-center text-base mb-1.5 border border-[#dfac6c]/50">
+            ✦
+          </div>
+          <div class="font-semibold text-white text-xs">First Available</div>
+          <div class="text-[10px] text-stone-400">Fastest slot</div>
         </button>
-        <button type="button" class="stylist-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold hover:border-stone-700" data-name="Amina (Master Artist)">
-          👑 Amina
-          <span class="block text-[10px] text-stone-400 font-normal">Lashes Master</span>
+
+        <button type="button" class="stylist-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-center hover:border-stone-700 transition" data-name="Amina (Master Lash Stylist)">
+          <div class="w-10 h-10 mx-auto rounded-full overflow-hidden mb-1.5 border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80" alt="Amina" class="w-full h-full object-cover">
+          </div>
+          <div class="font-semibold text-white text-xs">Amina</div>
+          <div class="text-[10px] text-stone-400">Master Lashes ★ 5.0</div>
         </button>
-        <button type="button" class="stylist-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold hover:border-stone-700" data-name="Chioma (Nail Designer)">
-          💅 Chioma
-          <span class="block text-[10px] text-stone-400 font-normal">Senior Nails</span>
+
+        <button type="button" class="stylist-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-center hover:border-stone-700 transition" data-name="Chioma (Senior Nail Artist)">
+          <div class="w-10 h-10 mx-auto rounded-full overflow-hidden mb-1.5 border border-stone-800">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80" alt="Chioma" class="w-full h-full object-cover">
+          </div>
+          <div class="font-semibold text-white text-xs">Chioma</div>
+          <div class="text-[10px] text-stone-400">Nail Designer ★ 4.9</div>
         </button>
       </div>
     </section>
 
-    <!-- Step 3: Date & Time Slot -->
-    <section class="mt-8">
+    <!-- STEP 3: DATE & TIME SLOTS -->
+    <section class="mt-9">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-rose-400">3. Date & Time</h2>
+        <div>
+          <span class="text-[10px] tracking-widest uppercase text-[#dfac6c] font-bold block">Step 03</span>
+          <h2 class="text-lg font-serif font-bold text-white tracking-wide">Appointment Schedule</h2>
+        </div>
       </div>
 
-      <!-- Date Input -->
-      <div class="mb-4">
-        <input type="date" id="bookingDate" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-rose-500">
+      <!-- Date Input Styled -->
+      <div class="mb-3">
+        <label class="block text-[11px] text-stone-400 font-medium mb-1.5">Pick Date</label>
+        <input type="date" id="bookingDate" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c] transition">
       </div>
 
       <!-- Time Slots Grid -->
+      <label class="block text-[11px] text-stone-400 font-medium mb-1.5">Available Slots</label>
       <div class="grid grid-cols-3 gap-2" id="timeSlotsContainer">
-        <button type="button" class="slot-btn active p-3 rounded-xl border border-rose-500 bg-rose-500/10 text-rose-300 text-xs font-semibold text-center" data-slot="10:00 AM">
+        <button type="button" class="slot-btn active p-3 rounded-2xl border border-[#dfac6c] bg-[#1c1815] text-[#dfac6c] text-xs font-semibold text-center transition" data-slot="10:00 AM">
           10:00 AM
         </button>
-        <button type="button" class="slot-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold text-center hover:border-stone-700" data-slot="11:30 AM">
-          11:30 AM
+        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="11:45 AM">
+          11:45 AM
         </button>
-        <button type="button" class="slot-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold text-center hover:border-stone-700" data-slot="01:30 PM">
+        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="01:30 PM">
           01:30 PM
         </button>
-        <button type="button" class="slot-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold text-center hover:border-stone-700" data-slot="03:00 PM">
-          03:00 PM
+        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="03:15 PM">
+          03:15 PM
         </button>
-        <button type="button" class="slot-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold text-center hover:border-stone-700" data-slot="04:30 PM">
-          04:30 PM
+        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="05:00 PM">
+          05:00 PM
         </button>
-        <button type="button" class="slot-btn p-3 rounded-xl border border-stone-800 bg-stone-900 text-stone-300 text-xs font-semibold text-center hover:border-stone-700" data-slot="06:00 PM">
-          06:00 PM
+        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="06:30 PM">
+          06:30 PM
         </button>
       </div>
     </section>
 
-    <!-- Step 4: Client Info -->
-    <section class="mt-8">
+    <!-- STEP 4: GUEST DETAILS -->
+    <section class="mt-9">
       <div class="flex items-center justify-between mb-3">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-rose-400">4. Your Details</h2>
+        <div>
+          <span class="text-[10px] tracking-widest uppercase text-[#dfac6c] font-bold block">Step 04</span>
+          <h2 class="text-lg font-serif font-bold text-white tracking-wide">Client Information</h2>
+        </div>
       </div>
 
-      <div class="space-y-3">
+      <div class="space-y-3.5">
         <div>
-          <label class="block text-xs font-medium text-stone-400 mb-1">Full Name</label>
-          <input type="text" id="custName" placeholder="e.g. Bukky Adeleke" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-rose-500" required>
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Full Legal or Preferred Name</label>
+          <input type="text" id="custName" placeholder="e.g. Tiwa Savage" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]" required>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-stone-400 mb-1">WhatsApp / Phone Number</label>
-          <input type="tel" id="custPhone" placeholder="e.g. 08123456789" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-rose-500" required>
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">WhatsApp Phone Number</label>
+          <input type="tel" id="custPhone" placeholder="e.g. 08123456789" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]" required>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-stone-400 mb-1">Email (for Paystack receipt)</label>
-          <input type="email" id="custEmail" placeholder="e.g. bukky@gmail.com" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-rose-500">
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Email (for payment confirmation receipt)</label>
+          <input type="email" id="custEmail" placeholder="e.g. tiwa@gmail.com" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]">
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-stone-400 mb-1">Special Notes / Allergies (Optional)</label>
-          <input type="text" id="custNotes" placeholder="e.g. Sensitive eyes, lash removal needed" class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-rose-500">
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Allergies / Previous Lash Removals (Optional)</label>
+          <input type="text" id="custNotes" placeholder="e.g. Sensitive eyes, lash bath needed" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]">
         </div>
       </div>
     </section>
 
-    <!-- Deposit Summary & Checkout Button -->
-    <div class="mt-8 p-5 rounded-2xl border border-rose-500/30 bg-rose-950/20">
-      <div class="flex justify-between items-center text-xs text-stone-300 mb-1">
+    <!-- DEPOSIT BREAKDOWN SUMMARY -->
+    <div class="mt-9 p-5 rounded-3xl border border-[#dfac6c]/40 bg-gradient-to-b from-[#1c1815] to-[#120f0e]">
+      <div class="flex justify-between items-center text-xs text-stone-300 mb-1.5">
         <span>Total Service Price:</span>
-        <span id="summaryTotal" class="font-semibold text-white">₦18,000</span>
+        <span id="summaryTotal" class="font-bold text-white text-sm">₦28,000</span>
       </div>
-      <div class="flex justify-between items-center text-sm font-bold text-white border-t border-rose-900/40 pt-2 mt-2">
-        <span>Non-refundable Deposit Due Now:</span>
-        <span id="summaryDeposit" class="text-rose-400 text-base">₦5,000</span>
+      <div class="flex justify-between items-center text-sm font-bold text-white border-t border-stone-800 pt-2.5 mt-2">
+        <span>Non-refundable Reservation Deposit:</span>
+        <span id="summaryDeposit" class="text-[#dfac6c] font-serif text-lg font-bold">₦10,000</span>
       </div>
-      <p class="text-[11px] text-stone-400 mt-2">Remaining balance will be paid in cash/transfer at the studio.</p>
+      <p class="text-[10px] text-stone-400 mt-2 leading-relaxed">
+        🔒 Deposit is deducted from your final bill. Balance is payable at the studio via transfer or card.
+      </p>
     </div>
 
-    <!-- Book & Pay Button -->
+    <!-- ACTION BUTTONS -->
     <div class="mt-6">
-      <button id="btnPay" class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-base shadow-xl shadow-rose-600/25 hover:brightness-110 active:scale-[0.99] transition flex items-center justify-center gap-2">
-        <span>Pay Deposit & Confirm Slot (₦5,000)</span>
+      <button id="btnPay" class="w-full py-4 rounded-2xl gold-gradient text-stone-950 font-bold text-sm tracking-wide shadow-xl shadow-[#dfac6c]/15 hover:brightness-105 active:scale-[0.99] transition flex items-center justify-center gap-2">
+        <span>Confirm & Pay Deposit (₦10,000)</span>
       </button>
-      
-      <!-- Video Screen Recording Demo Helper -->
+
       <div class="mt-4 flex items-center justify-between text-[11px] text-stone-500 px-1">
-        <span>🔒 Secured by Paystack</span>
-        <button id="btnSimulate" type="button" class="text-rose-400 hover:underline">
+        <span class="flex items-center gap-1">🔒 256-bit Secure Paystack</span>
+        <button id="btnSimulate" type="button" class="text-[#dfac6c] hover:underline font-semibold">
           ⚡ 1-Click Demo Booking (Simulated)
         </button>
       </div>
@@ -219,46 +325,47 @@
 
   </main>
 
-  <!-- Success Modal -->
-  <div id="successModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-stone-900 border border-rose-500/40 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl">
-        ✓
+  <!-- LUXURY SUCCESS MODAL -->
+  <div id="successModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141211] border border-[#dfac6c]/50 rounded-3xl p-7 max-w-sm w-full text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#2a241f] border border-[#dfac6c] flex items-center justify-center text-2xl text-[#dfac6c]">
+        ✦
       </div>
-      <h3 class="text-xl font-serif font-bold text-white mb-1">Appointment Confirmed!</h3>
-      <p class="text-xs text-stone-400 mb-4">Your deposit was received and your chair is reserved.</p>
+      <span class="text-[10px] tracking-[0.25em] uppercase text-[#dfac6c] font-bold block mb-1">Reservation Confirmed</span>
+      <h3 class="text-2xl font-serif font-bold text-white mb-2">We Look Forward to Welcoming You</h3>
+      <p class="text-xs text-stone-400 mb-5 leading-relaxed">Your deposit has been verified. A calendar invite and receipt have been dispatched.</p>
       
-      <div class="p-4 rounded-xl bg-stone-950 border border-stone-800 text-left text-xs space-y-2 mb-5">
-        <div class="flex justify-between"><span class="text-stone-400">Service:</span><span id="modalService" class="font-semibold text-white"></span></div>
-        <div class="flex justify-between"><span class="text-stone-400">Date & Time:</span><span id="modalDateTime" class="font-semibold text-white"></span></div>
+      <div class="p-4 rounded-2xl bg-[#0c0a09] border border-stone-800 text-left text-xs space-y-2.5 mb-5">
+        <div class="flex justify-between"><span class="text-stone-400">Treatment:</span><span id="modalService" class="font-serif font-bold text-white text-right"></span></div>
+        <div class="flex justify-between"><span class="text-stone-400">Date & Slot:</span><span id="modalDateTime" class="font-semibold text-white"></span></div>
         <div class="flex justify-between"><span class="text-stone-400">Artist:</span><span id="modalStylist" class="font-semibold text-white"></span></div>
-        <div class="flex justify-between"><span class="text-stone-400">Booking Ref:</span><span id="modalRef" class="font-mono text-rose-400"></span></div>
+        <div class="flex justify-between border-t border-stone-900 pt-2"><span class="text-stone-400">Booking Ref:</span><span id="modalRef" class="font-mono text-[#dfac6c]"></span></div>
       </div>
 
-      <div class="space-y-2">
-        <a id="modalWhatsAppBtn" target="_blank" class="w-full py-3 px-4 rounded-xl bg-emerald-600 text-white font-semibold text-xs flex items-center justify-center gap-2 hover:bg-emerald-500 transition">
-          💬 Chat with Salon on WhatsApp
+      <div class="space-y-2.5">
+        <a id="modalWhatsAppBtn" target="_blank" class="w-full py-3.5 px-4 rounded-2xl bg-[#1e2a22] border border-emerald-500/40 text-emerald-300 font-bold text-xs flex items-center justify-center gap-2 hover:bg-[#25362b] transition">
+          💬 Open Studio Chat on WhatsApp
         </a>
-        <button onclick="location.reload()" class="w-full py-2.5 px-4 rounded-xl bg-stone-800 text-stone-300 text-xs font-medium hover:bg-stone-700 transition">
-          Done
+        <button onclick="location.reload()" class="w-full py-2.5 px-4 rounded-xl bg-stone-900 text-stone-400 text-xs font-medium hover:text-white transition">
+          Return to Studio
         </button>
       </div>
     </div>
   </div>
 
   <script>
-    // Set default date to tomorrow
+    // Default date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     document.getElementById('bookingDate').value = tomorrow.toISOString().split('T')[0];
 
-    let selectedService = "Full Hybrid Lash Set";
-    let selectedPrice = 18000;
-    let selectedDeposit = 5000;
-    let selectedStylist = "Any Available Artist";
+    let selectedService = "Mega Russian Volume Lashes";
+    let selectedPrice = 28000;
+    let selectedDeposit = 10000;
+    let selectedStylist = "Any Available Master";
     let selectedSlot = "10:00 AM";
 
-    // Handle service selection change
+    // Handle service change
     document.querySelectorAll('input[name="service"]').forEach(radio => {
       radio.addEventListener('change', (e) => {
         selectedService = e.target.value;
@@ -266,48 +373,48 @@
         selectedDeposit = Number(e.target.dataset.deposit);
         document.getElementById('summaryTotal').innerText = `₦${selectedPrice.toLocaleString()}`;
         document.getElementById('summaryDeposit').innerText = `₦${selectedDeposit.toLocaleString()}`;
-        document.getElementById('btnPay').querySelector('span').innerText = `Pay Deposit & Confirm Slot (₦${selectedDeposit.toLocaleString()})`;
+        document.getElementById('btnPay').querySelector('span').innerText = `Confirm & Pay Deposit (₦${selectedDeposit.toLocaleString()})`;
       });
     });
 
-    // Handle stylist selector
+    // Handle stylist change
     document.querySelectorAll('.stylist-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.stylist-btn').forEach(b => {
-          b.classList.remove('active', 'border-rose-500', 'bg-rose-500/10', 'text-white');
-          b.classList.add('border-stone-800', 'bg-stone-900', 'text-stone-300');
+          b.classList.remove('active', 'border-[#dfac6c]', 'bg-[#1a1614]');
+          b.classList.add('border-stone-800', 'bg-[#141211]');
         });
-        btn.classList.add('active', 'border-rose-500', 'bg-rose-500/10', 'text-white');
+        btn.classList.add('active', 'border-[#dfac6c]', 'bg-[#1a1614]');
         selectedStylist = btn.dataset.name;
       });
     });
 
-    // Handle time slot selector
+    // Handle time slot
     document.querySelectorAll('.slot-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.slot-btn').forEach(b => {
-          b.classList.remove('active', 'border-rose-500', 'bg-rose-500/10', 'text-rose-300');
-          b.classList.add('border-stone-800', 'bg-stone-900', 'text-stone-300');
+          b.classList.remove('active', 'border-[#dfac6c]', 'bg-[#1c1815]', 'text-[#dfac6c]');
+          b.classList.add('border-stone-800', 'bg-[#141211]', 'text-stone-300');
         });
-        btn.classList.add('active', 'border-rose-500', 'bg-rose-500/10', 'text-rose-300');
+        btn.classList.add('active', 'border-[#dfac6c]', 'bg-[#1c1815]', 'text-[#dfac6c]');
         selectedSlot = btn.dataset.slot;
       });
     });
 
-    // Submit Booking
+    // Execution Logic
     async function executeBooking(isDemo = false) {
-      const name = document.getElementById('custName').value.trim() || (isDemo ? 'Folake Martins' : '');
+      const name = document.getElementById('custName').value.trim() || (isDemo ? 'Tiwa Savage' : '');
       const phone = document.getElementById('custPhone').value.trim() || (isDemo ? '08098765432' : '');
-      const email = document.getElementById('custEmail').value.trim() || (isDemo ? 'folake@gmail.com' : 'client@example.com');
+      const email = document.getElementById('custEmail').value.trim() || (isDemo ? 'tiwa@gmail.com' : 'guest@example.com');
       const notes = document.getElementById('custNotes').value.trim();
       const date = document.getElementById('bookingDate').value;
 
       if (!name || !phone) {
-        alert('Please fill in your Name and Phone Number.');
+        alert('Please provide your Name and WhatsApp phone number.');
         return;
       }
 
-      const bookingRef = `LASH_${Date.now()}`;
+      const bookingRef = `MDL_${Date.now()}`;
 
       try {
         const res = await fetch('/api/bookings/create', {
@@ -329,13 +436,12 @@
 
         const data = await res.json();
         if (data.success) {
-          // Open Modal
           document.getElementById('modalService').innerText = selectedService;
           document.getElementById('modalDateTime').innerText = `${date} at ${selectedSlot}`;
           document.getElementById('modalStylist').innerText = selectedStylist;
           document.getElementById('modalRef').innerText = bookingRef;
 
-          const waText = `Hi LuxeLash Studio, I just booked ${selectedService} for ${date} at ${selectedSlot}. My Ref is ${bookingRef}`;
+          const waText = `Hi Maison de Lash, I just reserved an appointment for ${selectedService} on ${date} at ${selectedSlot}. My Ref is ${bookingRef}`;
           document.getElementById('modalWhatsAppBtn').href = `https://wa.me/2348000000000?text=${encodeURIComponent(waText)}`;
 
           document.getElementById('successModal').classList.remove('hidden');
