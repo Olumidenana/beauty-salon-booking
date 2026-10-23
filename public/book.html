@@ -11,6 +11,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Paystack Inline JS -->
   <script src="https://js.paystack.co/v1/inline.js"></script>
 
   <style>
@@ -250,17 +252,17 @@
 
       <div class="space-y-3.5">
         <div>
-          <label class="block text-[11px] font-medium text-stone-400 mb-1">Full Legal or Preferred Name</label>
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Full Name</label>
           <input type="text" id="custName" placeholder="e.g. Tiwa Savage" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]" required>
         </div>
 
         <div>
-          <label class="block text-[11px] font-medium text-stone-400 mb-1">WhatsApp Phone Number</label>
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Your WhatsApp Number (for reminder & confirmation)</label>
           <input type="tel" id="custPhone" placeholder="e.g. 08123456789" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]" required>
         </div>
 
         <div>
-          <label class="block text-[11px] font-medium text-stone-400 mb-1">Email (for payment confirmation receipt)</label>
+          <label class="block text-[11px] font-medium text-stone-400 mb-1">Email (for Paystack official receipt)</label>
           <input type="email" id="custEmail" placeholder="e.g. tiwa@gmail.com" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c]">
         </div>
 
@@ -274,11 +276,11 @@
     <!-- Deposit Breakdown -->
     <div class="mt-9 p-5 rounded-3xl border border-[#dfac6c]/40 bg-gradient-to-b from-[#1c1815] to-[#120f0e]">
       <div class="flex justify-between items-center text-xs text-stone-300 mb-1.5">
-        <span>Total Service Price:</span>
+        <span>Total Treatment Price:</span>
         <span id="summaryTotal" class="font-bold text-white text-sm">₦28,000</span>
       </div>
       <div class="flex justify-between items-center text-sm font-bold text-white border-t border-stone-800 pt-2.5 mt-2">
-        <span>Non-refundable Reservation Deposit:</span>
+        <span>Reservation Deposit Due Now:</span>
         <span id="summaryDeposit" class="text-[#dfac6c] font-serif text-lg font-bold">₦10,000</span>
       </div>
       <p class="text-[10px] text-stone-400 mt-2 leading-relaxed">
@@ -286,20 +288,53 @@
       </p>
     </div>
 
-    <!-- Checkout Action -->
+    <!-- Action Button -->
     <div class="mt-6">
-      <button id="btnPay" class="w-full py-4 rounded-2xl gold-gradient text-stone-950 font-bold text-sm tracking-wide shadow-xl shadow-[#dfac6c]/15 hover:brightness-105 active:scale-[0.99] transition flex items-center justify-center gap-2">
-        <span>Confirm & Pay Deposit (₦10,000)</span>
+      <button id="btnPay" onclick="startPaystackCheckout()" class="w-full py-4 rounded-2xl gold-gradient text-stone-950 font-bold text-sm tracking-wide shadow-xl shadow-[#dfac6c]/15 hover:brightness-105 active:scale-[0.99] transition flex items-center justify-center gap-2">
+        <span>Confirm & Pay Deposit with Paystack (₦10,000)</span>
       </button>
 
       <div class="mt-4 flex items-center justify-between text-[11px] text-stone-500 px-1">
-        <span class="flex items-center gap-1">🔒 256-bit Secure Paystack</span>
-        <button id="btnSimulate" type="button" class="text-[#dfac6c] hover:underline font-semibold">
-          ⚡ 1-Click Demo Booking (Simulated)
+        <span class="flex items-center gap-1">🔒 256-bit Secure Paystack Checkout</span>
+        <button onclick="startPaystackCheckout(true)" type="button" class="text-[#dfac6c] hover:underline font-semibold">
+          ⚡ 1-Click Paystack Test
         </button>
       </div>
     </div>
   </main>
+
+  <!-- ======================================================== -->
+  <!-- STEP 2 CONFIRMATION MODAL: PAYSTACK VERIFIED -> SEND TO WHATSAPP -->
+  <!-- ======================================================== -->
+  <div id="paymentSuccessModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141211] border border-[#dfac6c]/50 rounded-3xl p-7 max-w-sm w-full text-center shadow-2xl relative">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-2xl text-emerald-400">
+        ✓
+      </div>
+      <span class="text-[10px] tracking-[0.25em] uppercase text-emerald-400 font-bold block mb-1">Paystack Verified</span>
+      <h3 class="text-2xl font-serif font-bold text-white mb-2">Deposit Received!</h3>
+      <p class="text-xs text-stone-400 mb-5 leading-relaxed">
+        Your payment was approved. Click the button below to send your confirmed appointment directly to our studio WhatsApp.
+      </p>
+      
+      <div class="p-4 rounded-2xl bg-[#0c0a09] border border-stone-800 text-left text-xs space-y-2 mb-6">
+        <div class="flex justify-between"><span class="text-stone-400">Treatment:</span><span id="confService" class="font-serif font-bold text-white text-right"></span></div>
+        <div class="flex justify-between"><span class="text-stone-400">Date & Slot:</span><span id="confDateTime" class="font-semibold text-white"></span></div>
+        <div class="flex justify-between"><span class="text-stone-400">Artist:</span><span id="confStylist" class="font-semibold text-white"></span></div>
+        <div class="flex justify-between border-t border-stone-900 pt-2"><span class="text-stone-400">Deposit Paid:</span><span id="confAmount" class="font-bold text-[#dfac6c]"></span></div>
+        <div class="flex justify-between"><span class="text-stone-400">Reference:</span><span id="confRef" class="font-mono text-stone-400 text-[10px]"></span></div>
+      </div>
+
+      <!-- THE DIRECT REDIRECT / SEND BUTTON -->
+      <a id="btnFinalWhatsApp" href="#" class="w-full py-4 px-4 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5D] text-stone-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition shadow-lg shadow-[#25D366]/20">
+        💬 Send to Studio WhatsApp (08149640122) →
+      </a>
+      
+      <p class="text-[10px] text-stone-500 mt-3">
+        Opens your WhatsApp with the confirmation message already written.
+      </p>
+    </div>
+  </div>
 
   <script>
     const tomorrow = new Date();
@@ -312,23 +347,10 @@
     let selectedStylist = "Any Available Master";
     let selectedSlot = "10:00 AM";
 
-    // Check URL parameters (e.g. ?service=biab)
-    const urlParams = new URLSearchParams(window.location.search);
-    const preselectedService = urlParams.get('service');
-    if (preselectedService) {
-      document.querySelectorAll('input[name="service"]').forEach(radio => {
-        if (radio.value.toLowerCase().includes(preselectedService.toLowerCase())) {
-          radio.checked = true;
-          selectedService = radio.value;
-          selectedPrice = Number(radio.dataset.price);
-          selectedDeposit = Number(radio.dataset.deposit);
-          document.getElementById('summaryTotal').innerText = `₦${selectedPrice.toLocaleString()}`;
-          document.getElementById('summaryDeposit').innerText = `₦${selectedDeposit.toLocaleString()}`;
-          document.getElementById('btnPay').querySelector('span').innerText = `Confirm & Pay Deposit (₦${selectedDeposit.toLocaleString()})`;
-        }
-      });
-    }
+    // Target Studio Business WhatsApp
+    const STUDIO_WHATSAPP = "2348149640122";
 
+    // Handle service change
     document.querySelectorAll('input[name="service"]').forEach(radio => {
       radio.addEventListener('change', (e) => {
         selectedService = e.target.value;
@@ -336,10 +358,11 @@
         selectedDeposit = Number(e.target.dataset.deposit);
         document.getElementById('summaryTotal').innerText = `₦${selectedPrice.toLocaleString()}`;
         document.getElementById('summaryDeposit').innerText = `₦${selectedDeposit.toLocaleString()}`;
-        document.getElementById('btnPay').querySelector('span').innerText = `Confirm & Pay Deposit (₦${selectedDeposit.toLocaleString()})`;
+        document.getElementById('btnPay').querySelector('span').innerText = `Confirm & Pay Deposit with Paystack (₦${selectedDeposit.toLocaleString()})`;
       });
     });
 
+    // Handle stylist change
     document.querySelectorAll('.stylist-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.stylist-btn').forEach(b => {
@@ -351,6 +374,7 @@
       });
     });
 
+    // Handle time slot
     document.querySelectorAll('.slot-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.slot-btn').forEach(b => {
@@ -362,21 +386,58 @@
       });
     });
 
-    // EXECUTION + AUTOMATIC REDIRECT INTO OWNER'S WHATSAPP
-    async function executeBooking(isDemo = false) {
-      const name = document.getElementById('custName').value.trim() || (isDemo ? 'Tiwa Savage' : '');
-      const phone = document.getElementById('custPhone').value.trim() || (isDemo ? '08098765432' : '');
-      const email = document.getElementById('custEmail').value.trim() || (isDemo ? 'tiwa@gmail.com' : 'guest@example.com');
+    // START PAYSTACK CHECKOUT
+    async function startPaystackCheckout(isSimulated = false) {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const email = document.getElementById('custEmail').value.trim() || 'client@maisondelash.com';
       const notes = document.getElementById('custNotes').value.trim();
       const date = document.getElementById('bookingDate').value;
 
       if (!name || !phone) {
-        alert('Please provide your Name and WhatsApp phone number.');
+        alert('Please fill in your Name and WhatsApp phone number.');
         return;
       }
 
       const bookingRef = `MDL_${Date.now()}`;
 
+      // Check if Paystack public key exists in window or fallback to simulated test
+      const paystackKey = window.PAYSTACK_PUBLIC_KEY || "pk_test_demo_mode";
+
+      if (isSimulated || paystackKey === "pk_test_demo_mode") {
+        // SIMULATED PAYSTACK PROMPT
+        const proceed = confirm(`🔒 PAYSTACK PAYMENT CHECKOUT\n\nAmount: ₦${selectedDeposit.toLocaleString()}\nChannel: Card / Bank Transfer\nMerchant: Maison de Lash Studio\n\nClick OK to simulate approved payment:`);
+        if (!proceed) return;
+        await completeBooking(bookingRef, name, phone, email, notes, date, selectedDeposit);
+      } else {
+        // REAL PAYSTACK INLINE POPUP
+        const handler = PaystackPop.setup({
+          key: paystackKey,
+          email: email,
+          amount: selectedDeposit * 100, // in kobo
+          currency: 'NGN',
+          ref: bookingRef,
+          metadata: {
+            custom_fields: [
+              { display_name: "Client Name", variable_name: "client_name", value: name },
+              { display_name: "Service", variable_name: "service", value: selectedService },
+              { display_name: "Appointment Date", variable_name: "date", value: date },
+              { display_name: "Time Slot", variable_name: "slot", value: selectedSlot }
+            ]
+          },
+          callback: async function(response) {
+            await completeBooking(response.reference, name, phone, email, notes, date, selectedDeposit);
+          },
+          onClose: function() {
+            alert('Payment window closed. Your chair has not been reserved yet.');
+          }
+        });
+        handler.openIframe();
+      }
+    }
+
+    // RECORD IN DATABASE & SHOW WHATSAPP REDIRECT MODAL
+    async function completeBooking(ref, name, phone, email, notes, date, amount) {
       try {
         const res = await fetch('/api/bookings/create', {
           method: 'POST',
@@ -389,9 +450,9 @@
             customerName: name,
             customerPhone: phone,
             customerEmail: email,
-            depositAmount: selectedDeposit,
+            depositAmount: amount,
             notes,
-            reference: bookingRef
+            reference: ref
           })
         });
 
@@ -400,33 +461,32 @@
         try {
           data = JSON.parse(rawText);
         } catch (e) {
-          throw new Error("Server error (non-JSON response): " + rawText.substring(0, 150));
+          throw new Error("Server error: " + rawText.substring(0, 150));
         }
-        if (data.success) {
-          // Pre-filled WhatsApp message
-          const waText = `Hi Maison de Lash! ✨ I just confirmed my booking deposit of ₦${selectedDeposit.toLocaleString()} for ${selectedService} with ${selectedStylist} on ${date} at ${selectedSlot}. My Ref is ${bookingRef}. Name: ${name}.`;
-          
-          // TARGET WHATSAPP BUSINESS PHONE
-          const targetPhone = "2348149640122";
-          const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waText)}`;
 
-          // AUTOMATIC REDIRECT INTO WHATSAPP HANDSHAKE
-          const payBtn = document.getElementById('btnPay');
-          payBtn.innerText = "✓ Confirmed! Redirecting to WhatsApp...";
-          payBtn.classList.add("bg-emerald-600");
-          setTimeout(() => {
-            window.location.href = waUrl;
-          }, 800);
+        if (data.success) {
+          // Fill details on the confirmation modal
+          document.getElementById('confService').innerText = selectedService;
+          document.getElementById('confDateTime').innerText = `${date} at ${selectedSlot}`;
+          document.getElementById('confStylist').innerText = selectedStylist;
+          document.getElementById('confAmount').innerText = `₦${amount.toLocaleString()} (Paid)`;
+          document.getElementById('confRef').innerText = ref;
+
+          // Build prefilled WhatsApp message
+          const waMessage = `Hi Maison de Lash! ✨ I just completed my deposit of ₦${amount.toLocaleString()} on Paystack for ${selectedService} with ${selectedStylist} on ${date} at ${selectedSlot}.\n\nBooking Ref: ${ref}\nClient Name: ${name}\nPhone: ${phone}. Please confirm my appointment!`;
+          const waUrl = `https://wa.me/${STUDIO_WHATSAPP}?text=${encodeURIComponent(waMessage)}`;
+
+          document.getElementById('btnFinalWhatsApp').href = waUrl;
+
+          // Open the Confirmation Modal so client can inspect before tapping to WhatsApp!
+          document.getElementById('paymentSuccessModal').classList.remove('hidden');
         } else {
           alert('Error: ' + (data.error || 'Failed to record booking'));
         }
       } catch (err) {
-        alert('Network error: ' + err.message);
+        alert('Network Notice: ' + err.message);
       }
     }
-
-    document.getElementById('btnPay').addEventListener('click', () => executeBooking(false));
-    document.getElementById('btnSimulate').addEventListener('click', () => executeBooking(true));
   </script>
 </body>
 </html>
