@@ -401,12 +401,16 @@
           const waText = `Hi Maison de Lash! ✨ I just confirmed my booking deposit of ₦${selectedDeposit.toLocaleString()} for ${selectedService} with ${selectedStylist} on ${date} at ${selectedSlot}. My Ref is ${bookingRef}. Name: ${name}.`;
           
           // TARGET WHATSAPP BUSINESS PHONE
-          const targetPhone = "2348000000000"; // We replace with your actual WhatsApp Business number!
+          const targetPhone = "2348149640122";
           const waUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(waText)}`;
 
           // AUTOMATIC REDIRECT INTO WHATSAPP HANDSHAKE
-          alert(`✅ Appointment Confirmed! Deposit recorded (Ref: ${bookingRef}). Redirecting directly to WhatsApp to complete your confirmation...`);
-          window.location.href = waUrl;
+          const payBtn = document.getElementById('btnPay');
+          payBtn.innerText = "✓ Confirmed! Redirecting to WhatsApp...";
+          payBtn.classList.add("bg-emerald-600");
+          setTimeout(() => {
+            window.location.href = waUrl;
+          }, 800);
         } else {
           alert('Error: ' + (data.error || 'Failed to record booking'));
         }
