@@ -26,6 +26,60 @@ app.get(['/treatments', '/treatments.html'], (req, res) => res.sendFile(path.joi
 app.get(['/lookbook', '/lookbook.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'lookbook.html')));
 app.get(['/about', '/about.html'], (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'about.html')));
 
+const ALL_STUDIO_SLOTS = [
+  '10:00 AM', '11:45 AM', '01:30 PM', '03:15 PM', '05:00 PM', '06:30 PM'
+];
+
+/**
+ * Check if a date falls on a closed day (e.g. Sunday)
+ */
+function isStudioClosed(dateString) {
+  if (!dateString) return false;
+  const d = new Date(dateString + 'T00:00:00Z');
+  return d.getUTCDay() === 0; // 0 = Sunday
+}
+
+/**
+ * Query Supabase & Local Memory for Booked Slots to prevent Double-Booking
+ */
+async function getBookedSlots(date, stylist) {
+  let bookedSlots = [];
+
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+  if (supabaseUrl && supabaseKey) {
+    try {
+      let queryUrl = `${supabaseUrl.replace(/\/$/, '')}/rest/v1/beauty_bookings?appointment_date=eq.${date}&select=time_slot,stylist`;
+      if (stylist && !stylist.includes('Any')) {
+        queryUrl += `&stylist=eq.${encodeURIComponent(stylist)}`;
+      }
+
+      const res = await fetch(queryUrl, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`
+        }
+      });
+
+      if (res.ok) {
+        const rows = await res.json();
+        bookedSlots = rows.map(r => r.time_slot);
+      }
+    } catch (err) {
+      console.warn('[Availability] Supabase lookup error:', err.message);
+    }
+  }
+
+  // Combine with local store
+  const { bookings } = getStoredRecords();
+  const localBooked = bookings
+    .filter(b => b.date === date && (!stylist || b.stylist === stylist || stylist.includes('Any') || b.stylist.includes('Any')))
+    .map(b => b.timeSlot);
+
+  return [...new Set([...bookedSlots, ...localBooked])];
+}
+
 // 1. Health
 app.get(['/api/health', '/health'], (req, res) => {
   res.json({
@@ -37,29 +91,50 @@ app.get(['/api/health', '/health'], (req, res) => {
   });
 });
 
-// 2. Availability Checker
-app.get(['/api/availability', '/availability'], (req, res) => {
-  const { date, stylist } = req.query;
-  const { bookings } = getStoredRecords();
+// 2. LIVE AVAILABILITY CHECKER (PREVENTS DOUBLE BOOKINGS)
+app.get(['/api/availability', '/availability'], async (req, res) => {
+  try {
+    const { date, stylist } = req.query;
 
-  const bookedSlots = bookings
-    .filter(b => b.date === date && (!stylist || b.stylist === stylist || b.stylist === 'Any'))
-    .map(b => b.timeSlot);
+    if (!date) {
+      return res.status(400).json({ error: 'Please specify a date' });
+    }
 
-  const defaultSlots = [
-    '09:00 AM', '10:30 AM', '12:00 PM', 
-    '01:30 PM', '03:00 PM', '04:30 PM', '06:00 PM'
-  ];
+    // Check if Sunday
+    if (isStudioClosed(date)) {
+      return res.json({
+        date,
+        closed: true,
+        message: 'The studio is closed on Sundays for deep sterilization (VIP Bridal bookings only via WhatsApp). Please pick Monday – Saturday.',
+        slots: []
+      });
+    }
 
-  const slots = defaultSlots.map(time => ({
-    time,
-    available: !bookedSlots.includes(time)
-  }));
+    const booked = await getBookedSlots(date, stylist);
 
-  res.json({ date, slots });
+    const slots = ALL_STUDIO_SLOTS.map(time => ({
+      time,
+      available: !booked.includes(time),
+      status: booked.includes(time) ? 'BOOKED' : 'OPEN'
+    }));
+
+    const availableCount = slots.filter(s => s.available).length;
+
+    res.json({
+      date,
+      closed: false,
+      totalSlots: ALL_STUDIO_SLOTS.length,
+      availableSlotsCount: availableCount,
+      fullyBooked: availableCount === 0,
+      slots
+    });
+  } catch (err) {
+    console.error('[API Availability Error]', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// 3. Beauty / Lash Booking (Supports both /api/bookings/create and /bookings/create)
+// 3. Beauty / Lash Booking (WITH DOUBLE-BOOKING LOCK)
 app.post(['/api/bookings/create', '/bookings/create'], async (req, res) => {
   try {
     const {
@@ -77,6 +152,21 @@ app.post(['/api/bookings/create', '/bookings/create'], async (req, res) => {
 
     if (!customerName || !customerPhone || !serviceName || !date || !timeSlot) {
       return res.status(400).json({ error: 'Missing required booking fields.' });
+    }
+
+    // A. Enforce Operating Days (Closed on Sundays)
+    if (isStudioClosed(date)) {
+      return res.status(400).json({
+        error: 'The studio is closed on Sundays. Please select a date from Monday to Saturday.'
+      });
+    }
+
+    // B. Check against double-booking
+    const alreadyBooked = await getBookedSlots(date, stylist);
+    if (alreadyBooked.includes(timeSlot)) {
+      return res.status(409).json({
+        error: `Sorry! The ${timeSlot} slot on ${date} was just secured by another client. Please select another open time slot.`
+      });
     }
 
     const bookingPayload = {

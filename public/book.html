@@ -214,33 +214,27 @@
     <div class="mt-9">
       <div class="flex items-center justify-between mb-3">
         <span class="text-[10px] tracking-widest uppercase text-[#dfac6c] font-bold block">3. Date & Time Selection</span>
+        <span id="slotStatusIndicator" class="text-[10px] text-[#dfac6c] font-medium flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Live Studio Calendar
+        </span>
       </div>
 
       <div class="mb-3">
-        <label class="block text-[11px] text-stone-400 font-medium mb-1.5">Pick Date</label>
+        <label class="block text-[11px] text-stone-400 font-medium mb-1.5">Pick Date (Mon – Sat)</label>
         <input type="date" id="bookingDate" class="w-full bg-[#141211] border border-stone-800 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#dfac6c] transition">
       </div>
 
-      <label class="block text-[11px] text-stone-400 font-medium mb-1.5">Available Slots</label>
+      <!-- Closed or Fully Booked Banner (Dynamic) -->
+      <div id="dateNoticeBanner" class="hidden mb-3"></div>
+
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="text-[11px] text-stone-400 font-medium">Available Session Slots</label>
+        <span id="slotsRemainingCount" class="text-[10px] text-stone-400 font-medium"></span>
+      </div>
+
       <div class="grid grid-cols-3 gap-2" id="timeSlotsContainer">
-        <button type="button" class="slot-btn active p-3 rounded-2xl border border-[#dfac6c] bg-[#1c1815] text-[#dfac6c] text-xs font-semibold text-center transition" data-slot="10:00 AM">
-          10:00 AM
-        </button>
-        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="11:45 AM">
-          11:45 AM
-        </button>
-        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="01:30 PM">
-          01:30 PM
-        </button>
-        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="03:15 PM">
-          03:15 PM
-        </button>
-        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="05:00 PM">
-          05:00 PM
-        </button>
-        <button type="button" class="slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition" data-slot="06:30 PM">
-          06:30 PM
-        </button>
+        <!-- Rendered dynamically via API -->
       </div>
     </div>
 
@@ -432,10 +426,34 @@
     </div>
   </div>
 
+  <!-- ======================================================== -->
+  <!-- LUXURY NOTICE / ERROR MODAL (No crude browser alerts!) -->
+  <!-- ======================================================== -->
+  <div id="noticeModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#141211] border border-stone-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative animate-in fade-in zoom-in duration-150">
+      <div id="noticeModalIcon" class="w-14 h-14 mx-auto mb-3 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl font-bold">
+        !
+      </div>
+      <h3 id="noticeModalTitle" class="font-serif font-bold text-white text-base mb-1.5">Notice</h3>
+      <p id="noticeModalBody" class="text-xs text-stone-300 mb-5 leading-relaxed"></p>
+      <button onclick="closeNoticeModal()" class="w-full py-3.5 rounded-2xl gold-gradient text-stone-950 font-bold text-xs uppercase tracking-wider hover:brightness-105 active:scale-[0.99] transition">
+        Understood
+      </button>
+    </div>
+  </div>
+
   <script>
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    document.getElementById('bookingDate').value = tomorrow.toISOString().split('T')[0];
+    // Initialize Booking Date (Skips Sundays so user doesn't land on a closed day)
+    const today = new Date();
+    const minDateStr = today.toISOString().split('T')[0];
+    document.getElementById('bookingDate').min = minDateStr;
+
+    let defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 1);
+    if (defaultDate.getDay() === 0) { // If tomorrow is Sunday, skip to Monday!
+      defaultDate.setDate(defaultDate.getDate() + 1);
+    }
+    document.getElementById('bookingDate').value = defaultDate.toISOString().split('T')[0];
 
     let selectedService = "Mega Russian Volume Lashes";
     let selectedPrice = 28000;
@@ -445,6 +463,137 @@
 
     // Target Studio Business WhatsApp
     const STUDIO_WHATSAPP = "2348149640122";
+
+    // Custom Luxury Notice Modal Handler
+    function showNotice(title, message, isError = false) {
+      document.getElementById('noticeModalTitle').innerText = title;
+      document.getElementById('noticeModalBody').innerText = message;
+      const icon = document.getElementById('noticeModalIcon');
+      if (isError) {
+        icon.className = 'w-14 h-14 mx-auto mb-3 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xl font-bold';
+        icon.innerText = '✕';
+      } else {
+        icon.className = 'w-14 h-14 mx-auto mb-3 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl font-bold';
+        icon.innerText = '!';
+      }
+      document.getElementById('noticeModal').classList.remove('hidden');
+    }
+
+    function closeNoticeModal() {
+      document.getElementById('noticeModal').classList.add('hidden');
+    }
+
+    // Dynamic Availability Fetcher & Slot Renderer
+    async function loadAvailability() {
+      const date = document.getElementById('bookingDate').value;
+      const container = document.getElementById('timeSlotsContainer');
+      const banner = document.getElementById('dateNoticeBanner');
+      const statusIndicator = document.getElementById('slotStatusIndicator');
+      const remainingCount = document.getElementById('slotsRemainingCount');
+
+      if (!date) return;
+
+      statusIndicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> Live checking...';
+      container.innerHTML = '<div class="col-span-3 py-6 text-center text-xs text-stone-500 animate-pulse">Checking studio calendar...</div>';
+      banner.classList.add('hidden');
+      banner.innerHTML = '';
+
+      try {
+        const res = await fetch(`/api/availability?date=${date}&stylist=${encodeURIComponent(selectedStylist)}`);
+        const data = await res.json();
+
+        // 1. Check if Sunday / Closed
+        if (data.closed) {
+          statusIndicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Closed on Sundays';
+          if (remainingCount) remainingCount.innerText = '0 slots';
+          selectedSlot = null;
+          container.innerHTML = '';
+          banner.innerHTML = `
+            <div class="p-4 rounded-2xl bg-[#1f1311] border border-rose-800/60 text-xs flex items-start gap-3">
+              <div class="w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center flex-shrink-0 text-sm font-bold">✕</div>
+              <div>
+                <h4 class="font-serif font-bold text-white text-xs">Studio Closed on Sundays</h4>
+                <p class="text-[11px] text-stone-300 mt-0.5 leading-relaxed">
+                  Maison de Lash is closed on Sundays for deep autoclave sterilization & VIP bridal sessions. Please pick any date from <strong>Monday to Saturday</strong>.
+                </p>
+              </div>
+            </div>
+          `;
+          banner.classList.remove('hidden');
+          return;
+        }
+
+        // 2. Check if Fully Booked
+        if (data.fullyBooked) {
+          statusIndicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Day Fully Booked';
+          if (remainingCount) remainingCount.innerText = '0 slots left';
+          selectedSlot = null;
+          container.innerHTML = '';
+          banner.innerHTML = `
+            <div class="p-4 rounded-2xl bg-[#1a1713] border border-[#dfac6c]/50 text-xs flex items-start gap-3">
+              <div class="w-8 h-8 rounded-full bg-[#dfac6c]/20 text-[#dfac6c] flex items-center justify-center flex-shrink-0 text-sm font-bold">!</div>
+              <div>
+                <h4 class="font-serif font-bold text-white text-xs">All Slots Taken For This Date</h4>
+                <p class="text-[11px] text-stone-300 mt-0.5 leading-relaxed">
+                  Every slot on this date has been reserved. Please pick another date or select another master artist.
+                </p>
+              </div>
+            </div>
+          `;
+          banner.classList.remove('hidden');
+          return;
+        }
+
+        // 3. Open Day with Available Slots
+        statusIndicator.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Live Calendar Active';
+        if (remainingCount) remainingCount.innerText = `${data.availableSlotsCount} of ${data.totalSlots} available`;
+
+        // If current selectedSlot is not among available slots, auto-select first open slot
+        const openSlots = data.slots.filter(s => s.available);
+        if (!openSlots.some(s => s.time === selectedSlot)) {
+          selectedSlot = openSlots.length > 0 ? openSlots[0].time : null;
+        }
+
+        container.innerHTML = '';
+        data.slots.forEach(slot => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+
+          if (!slot.available) {
+            btn.disabled = true;
+            btn.className = 'p-3 rounded-2xl border border-stone-800/60 bg-[#121110] text-stone-500 text-xs font-semibold text-center opacity-40 cursor-not-allowed flex flex-col items-center justify-center';
+            btn.innerHTML = `
+              <span class="line-through">${slot.time}</span>
+              <span class="text-[9px] uppercase tracking-wider text-rose-400/80 font-bold mt-0.5">Reserved</span>
+            `;
+          } else {
+            const isSelected = slot.time === selectedSlot;
+            btn.className = isSelected
+              ? 'slot-btn active p-3 rounded-2xl border border-[#dfac6c] bg-[#1c1815] text-[#dfac6c] text-xs font-semibold text-center transition flex flex-col items-center justify-center shadow-md shadow-[#dfac6c]/10'
+              : 'slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition flex flex-col items-center justify-center';
+            btn.dataset.slot = slot.time;
+            btn.innerHTML = `
+              <span>${slot.time}</span>
+              <span class="text-[9px] uppercase tracking-wider text-emerald-400/80 font-medium mt-0.5">Available</span>
+            `;
+
+            btn.addEventListener('click', () => {
+              document.querySelectorAll('.slot-btn').forEach(b => {
+                b.className = 'slot-btn p-3 rounded-2xl border border-stone-800 bg-[#141211] text-stone-300 text-xs font-semibold text-center hover:border-stone-700 transition flex flex-col items-center justify-center';
+              });
+              btn.className = 'slot-btn active p-3 rounded-2xl border border-[#dfac6c] bg-[#1c1815] text-[#dfac6c] text-xs font-semibold text-center transition flex flex-col items-center justify-center shadow-md shadow-[#dfac6c]/10';
+              selectedSlot = slot.time;
+            });
+          }
+
+          container.appendChild(btn);
+        });
+
+      } catch (err) {
+        console.error('Availability fetch failed:', err);
+        statusIndicator.innerHTML = '<span class="text-stone-500">Live check offline</span>';
+      }
+    }
 
     // Handle service change
     document.querySelectorAll('input[name="service"]').forEach(radio => {
@@ -458,7 +607,7 @@
       });
     });
 
-    // Handle stylist change
+    // Handle stylist change -> reload live availability for that artist
     document.querySelectorAll('.stylist-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.stylist-btn').forEach(b => {
@@ -467,28 +616,33 @@
         });
         btn.classList.add('active', 'border-[#dfac6c]', 'bg-[#1a1614]');
         selectedStylist = btn.dataset.name;
+        loadAvailability();
       });
     });
 
-    // Handle time slot
-    document.querySelectorAll('.slot-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.slot-btn').forEach(b => {
-          b.classList.remove('active', 'border-[#dfac6c]', 'bg-[#1c1815]', 'text-[#dfac6c]');
-          b.classList.add('border-stone-800', 'bg-[#141211]', 'text-stone-300');
-        });
-        btn.classList.add('active', 'border-[#dfac6c]', 'bg-[#1c1815]', 'text-[#dfac6c]');
-        selectedSlot = btn.dataset.slot;
-      });
+    // Handle date change -> reload live availability
+    document.getElementById('bookingDate').addEventListener('change', () => {
+      loadAvailability();
     });
 
     // OPEN PAYSTACK MODAL
     function openPaystackCheckoutModal() {
       const name = document.getElementById('custName').value.trim();
       const phone = document.getElementById('custPhone').value.trim();
+      const date = document.getElementById('bookingDate').value;
 
       if (!name || !phone) {
-        alert('Please provide your Full Name and WhatsApp phone number.');
+        showNotice('Information Required', 'Please provide your Full Name and WhatsApp phone number before proceeding.');
+        return;
+      }
+
+      if (!date) {
+        showNotice('Date Required', 'Please select a preferred appointment date.');
+        return;
+      }
+
+      if (!selectedSlot) {
+        showNotice('Slot Required', 'Please select an open session slot. If this date is closed or full, kindly choose another day.');
         return;
       }
 
@@ -536,7 +690,7 @@
       const ref = `PAYSTACK_REF_${Date.now()}`;
 
       const btn = document.getElementById('btnPsSubmit');
-      btn.innerText = "Processing with Paystack...";
+      btn.innerText = "Authorizing with Paystack...";
       btn.disabled = true;
 
       try {
@@ -562,11 +716,30 @@
         try {
           data = JSON.parse(rawText);
         } catch (e) {
-          throw new Error("Server response error: " + rawText.substring(0, 100));
+          throw new Error("Server error: " + rawText.substring(0, 100));
+        }
+
+        // Handle Double-Booking / Conflict (HTTP 409)
+        if (res.status === 409) {
+          closePaystackModal();
+          showNotice('Slot Just Secured', data.error || 'This time slot was just taken by another client. We have refreshed the calendar for you—please pick another open slot.', true);
+          loadAvailability();
+          return;
+        }
+
+        // Handle Other Errors (e.g., Sunday closed or missing info)
+        if (!res.ok || !data.success) {
+          closePaystackModal();
+          showNotice('Booking Notice', data.error || 'Could not complete reservation. Please try again.', true);
+          loadAvailability();
+          return;
         }
 
         if (data.success) {
           closePaystackModal();
+
+          // Refresh live availability in background
+          loadAvailability();
 
           // Fill confirmation screen
           document.getElementById('confService').innerText = selectedService;
@@ -580,16 +753,18 @@
 
           document.getElementById('btnFinalWhatsApp').href = waUrl;
           document.getElementById('paymentSuccessModal').classList.remove('hidden');
-        } else {
-          alert('Error: ' + (data.error || 'Payment failed'));
         }
       } catch (err) {
-        alert('Notice: ' + err.message);
+        closePaystackModal();
+        showNotice('Connection Error', err.message, true);
       } finally {
         btn.innerText = "Authorize & Pay Deposit";
         btn.disabled = false;
       }
     }
+
+    // Initial availability load on page start
+    loadAvailability();
   </script>
 </body>
 </html>
