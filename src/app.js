@@ -9,21 +9,19 @@ const { dispatchNotifications } = require('./services/notifications');
 
 const app = express();
 
-// Enable CORS
 app.use(cors());
 
-// Capture raw body for Paystack webhook signature verification
 app.use(express.json({
   verify: (req, res, buf) => {
     req.rawBody = buf;
   }
 }));
 
-// Serve static UI templates and admin portal
+// Serve static UI templates
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// 1. Health Endpoint
-app.get('/api/health', (req, res) => {
+// 1. Health
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'online',
     timestamp: new Date().toISOString(),
@@ -34,7 +32,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // 2. Availability Checker
-app.get('/api/availability', (req, res) => {
+app.get(['/api/availability', '/availability'], (req, res) => {
   const { date, stylist } = req.query;
   const { bookings } = getStoredRecords();
 
@@ -55,8 +53,8 @@ app.get('/api/availability', (req, res) => {
   res.json({ date, slots });
 });
 
-// 3. Beauty / Lash Booking
-app.post('/api/bookings/create', async (req, res) => {
+// 3. Beauty / Lash Booking (Supports both /api/bookings/create and /bookings/create)
+app.post(['/api/bookings/create', '/bookings/create'], async (req, res) => {
   try {
     const {
       serviceName,
@@ -79,13 +77,13 @@ app.post('/api/bookings/create', async (req, res) => {
       type: 'BEAUTY_BOOKING',
       reference: reference || `LASH_${Date.now()}`,
       serviceName,
-      stylist: stylist || 'Any Stylist',
+      stylist: stylist || 'Any Available Master',
       date,
       timeSlot,
       customerName,
       customerPhone,
       customerEmail: customerEmail || '',
-      amount: Number(depositAmount) || 5000,
+      amount: Number(depositAmount) || 10000,
       paymentStatus: 'PAID',
       notes: notes || '',
       createdAt: new Date().toISOString()
@@ -107,63 +105,8 @@ app.post('/api/bookings/create', async (req, res) => {
   }
 });
 
-// 4. Food & Treats Order
-app.post('/api/orders/create', async (req, res) => {
-  try {
-    const {
-      customerName,
-      customerPhone,
-      customerEmail,
-      fulfillmentType,
-      address,
-      items,
-      totalAmount,
-      notes,
-      reference
-    } = req.body;
-
-    if (!customerName || !customerPhone || !items || !items.length) {
-      return res.status(400).json({ error: 'Missing required order fields or empty cart.' });
-    }
-
-    const itemsSummary = items
-      .map(it => `• ${it.quantity}x ${it.name} ${it.extras ? `(${it.extras})` : ''} - ₦${(it.price * it.quantity).toLocaleString()}`)
-      .join('\n');
-
-    const orderPayload = {
-      type: 'FOOD_ORDER',
-      reference: reference || `FOOD_${Date.now()}`,
-      customerName,
-      customerPhone,
-      customerEmail: customerEmail || '',
-      fulfillmentType: fulfillmentType || 'DELIVERY',
-      address: fulfillmentType === 'PICKUP' ? 'Store Pickup' : (address || 'Not provided'),
-      items,
-      itemsSummary,
-      amount: Number(totalAmount) || 0,
-      paymentStatus: 'PAID',
-      notes: notes || '',
-      createdAt: new Date().toISOString()
-    };
-
-    const sheetSync = await syncToGoogleSheet(orderPayload);
-    const notificationResult = await dispatchNotifications('FOOD_ORDER', orderPayload);
-
-    res.json({
-      success: true,
-      message: 'Order placed and sent to kitchen.',
-      order: orderPayload,
-      sheetSync,
-      notifications: notificationResult
-    });
-  } catch (error) {
-    console.error('[API] Order error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// 5. Paystack Initialize
-app.post('/api/paystack/initialize', async (req, res) => {
+// 4. Paystack Initialize
+app.post(['/api/paystack/initialize', '/paystack/initialize'], async (req, res) => {
   try {
     const { email, amount, metadata, callbackUrl } = req.body;
     const amountInKobo = Math.round(Number(amount) * 100);
@@ -182,8 +125,8 @@ app.post('/api/paystack/initialize', async (req, res) => {
   }
 });
 
-// 6. Paystack Webhook
-app.post('/api/paystack/webhook', async (req, res) => {
+// 5. Paystack Webhook
+app.post(['/api/paystack/webhook', '/paystack/webhook'], async (req, res) => {
   const signature = req.headers['x-paystack-signature'];
   const isValid = verifyWebhookSignature(req.rawBody, signature);
 
@@ -196,47 +139,41 @@ app.post('/api/paystack/webhook', async (req, res) => {
     const data = event.data;
     const metadata = data.metadata || {};
 
-    if (metadata.orderType === 'BEAUTY_BOOKING') {
-      await syncToGoogleSheet({
-        type: 'BEAUTY_BOOKING',
-        reference: data.reference,
-        serviceName: metadata.serviceName,
-        stylist: metadata.stylist,
-        date: metadata.date,
-        timeSlot: metadata.timeSlot,
-        customerName: metadata.customerName,
-        customerPhone: metadata.customerPhone,
-        customerEmail: data.customer.email,
-        amount: data.amount / 100,
-        paymentStatus: 'PAID',
-        notes: metadata.notes
-      });
-      await dispatchNotifications('BEAUTY_BOOKING', metadata);
-    } else if (metadata.orderType === 'FOOD_ORDER') {
-      await syncToGoogleSheet({
-        type: 'FOOD_ORDER',
-        reference: data.reference,
-        customerName: metadata.customerName,
-        customerPhone: metadata.customerPhone,
-        customerEmail: data.customer.email,
-        fulfillmentType: metadata.fulfillmentType,
-        address: metadata.address,
-        itemsSummary: metadata.itemsSummary,
-        amount: data.amount / 100,
-        paymentStatus: 'PAID',
-        notes: metadata.notes
-      });
-      await dispatchNotifications('FOOD_ORDER', metadata);
-    }
+    await syncToGoogleSheet({
+      type: 'BEAUTY_BOOKING',
+      reference: data.reference,
+      serviceName: metadata.serviceName,
+      stylist: metadata.stylist,
+      date: metadata.date,
+      timeSlot: metadata.timeSlot,
+      customerName: metadata.customerName,
+      customerPhone: metadata.customerPhone,
+      customerEmail: data.customer.email,
+      amount: data.amount / 100,
+      paymentStatus: 'PAID',
+      notes: metadata.notes
+    });
+    await dispatchNotifications('BEAUTY_BOOKING', metadata);
   }
 
   res.sendStatus(200);
 });
 
-// 7. Admin Data Records
-app.get('/api/records', (req, res) => {
+// 6. Admin Data Records
+app.get(['/api/records', '/records'], (req, res) => {
   const records = getStoredRecords();
   res.json(records);
+});
+
+// Catch-all JSON 404 handler for API routes
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `API route ${req.method} ${req.url} not found` });
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[Server Error]', err);
+  res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
 module.exports = app;

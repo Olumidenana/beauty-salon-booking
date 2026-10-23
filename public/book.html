@@ -395,7 +395,13 @@
           })
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
+        let data;
+        try {
+          data = JSON.parse(rawText);
+        } catch (e) {
+          throw new Error("Server error (non-JSON response): " + rawText.substring(0, 150));
+        }
         if (data.success) {
           // Pre-filled WhatsApp message
           const waText = `Hi Maison de Lash! ✨ I just confirmed my booking deposit of ₦${selectedDeposit.toLocaleString()} for ${selectedService} with ${selectedStylist} on ${date} at ${selectedSlot}. My Ref is ${bookingRef}. Name: ${name}.`;
