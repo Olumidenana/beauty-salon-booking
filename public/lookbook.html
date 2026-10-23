@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Lookbook & Proof • MAISON DE LASH</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-serif { font-family: 'Cormorant Garamond', serif; }
+    .gold-gradient {
+      background: linear-gradient(135deg, #fce0ad 0%, #dfac6c 50%, #c68b45 100%);
+    }
+    .gold-text {
+      background: linear-gradient(135deg, #fae2b6 0%, #e0b47b 50%, #c48e4b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-[#0c0a09] text-[#f5f5f4] min-h-screen selection:bg-[#dfac6c] selection:text-black antialiased pb-24">
+
+  <!-- Nav -->
+  <nav class="border-b border-[#292524] bg-[#0c0a09]/95 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/" class="flex flex-col">
+        <span class="text-[9px] tracking-[0.35em] uppercase text-stone-400 font-semibold">Sanctuary</span>
+        <span class="text-2xl font-serif font-bold tracking-tight text-white">
+          MAISON <span class="font-serif italic font-normal gold-text">de</span> LASH
+        </span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest text-stone-300 font-medium">
+        <a href="/" class="hover:text-[#dfac6c] transition">Home</a>
+        <a href="/treatments.html" class="hover:text-[#dfac6c] transition">Treatments</a>
+        <a href="/lookbook.html" class="text-[#dfac6c] font-bold border-b border-[#dfac6c] pb-1">Lookbook</a>
+        <a href="/about.html" class="hover:text-[#dfac6c] transition">The Atelier</a>
+        <a href="/book.html" class="hover:text-[#dfac6c] transition">Reserve Chair</a>
+      </div>
+
+      <a href="/book.html" class="px-5 py-2.5 rounded-full gold-gradient text-stone-950 font-bold text-xs tracking-wider uppercase shadow-lg shadow-[#dfac6c]/15 hover:brightness-105 active:scale-95 transition">
+        Book Slot
+      </a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="max-w-4xl mx-auto px-6 pt-16 pb-12 text-center">
+    <span class="text-[10px] tracking-[0.3em] uppercase text-[#dfac6c] font-bold block mb-2">Unfiltered Portfolios</span>
+    <h1 class="text-4xl md:text-5xl font-serif font-bold text-white mb-4">The Atelier Lookbook</h1>
+    <p class="text-xs text-stone-400 max-w-md mx-auto leading-relaxed">
+      Real client sets, retention proof, and certified master artistry from our Victoria Island studio suite.
+    </p>
+  </header>
+
+  <!-- Lookbook Grid -->
+  <main class="max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      
+      <!-- Card 1 -->
+      <div class="rounded-3xl border border-stone-800 bg-[#141211] overflow-hidden group">
+        <div class="h-80 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1583001931096-959e9a1a6223?w=800&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <span class="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/80 text-[10px] font-semibold text-[#dfac6c] border border-[#dfac6c]/40">Day 28 Retention</span>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-serif font-bold text-white text-lg">Midnight Mega Russian Volume</h3>
+          </div>
+          <p class="text-[11px] text-stone-400 mb-4">Client: Kemi O. (Lekki) • 6D Handcrafted Fans • 120 Mins</p>
+          <a href="/book.html?service=Mega%20Russian" class="w-full py-2.5 rounded-xl border border-[#dfac6c]/40 hover:bg-[#dfac6c] hover:text-stone-950 text-[#dfac6c] text-center block text-xs font-bold transition">
+            Book This Style →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="rounded-3xl border border-stone-800 bg-[#141211] overflow-hidden group">
+        <div class="h-80 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=800&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <span class="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/80 text-[10px] font-semibold text-[#dfac6c] border border-[#dfac6c]/40">Kim-K Styling</span>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-serif font-bold text-white text-lg">Whispy Wet-Look Cat-Eye</h3>
+          </div>
+          <p class="text-[11px] text-stone-400 mb-4">Client: Sharon A. (Ikoyi) • Snapped Spike Mapping • 90 Mins</p>
+          <a href="/book.html?service=Whispy%20Wet-Look" class="w-full py-2.5 rounded-xl border border-[#dfac6c]/40 hover:bg-[#dfac6c] hover:text-stone-950 text-[#dfac6c] text-center block text-xs font-bold transition">
+            Book This Style →
+          </a>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="rounded-3xl border border-stone-800 bg-[#141211] overflow-hidden group">
+        <div class="h-80 overflow-hidden relative">
+          <img src="https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=800&auto=format&fit=crop&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <span class="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/80 text-[10px] font-semibold text-[#dfac6c] border border-[#dfac6c]/40">Russian Cuticle</span>
+        </div>
+        <div class="p-5">
+          <div class="flex items-center justify-between mb-1">
+            <h3 class="font-serif font-bold text-white text-lg">Glazed Chrome BIAB Manicure</h3>
+          </div>
+          <p class="text-[11px] text-stone-400 mb-4">Client: Tolani B. (VI) • Organic Builder Gel • 90 Mins</p>
+          <a href="/book.html?service=BIAB" class="w-full py-2.5 rounded-xl border border-[#dfac6c]/40 hover:bg-[#dfac6c] hover:text-stone-950 text-[#dfac6c] text-center block text-xs font-bold transition">
+            Book This Style →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>
